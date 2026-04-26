@@ -1,5 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
+from apps.ingestion.views import IngestAPIView
 from .views import (
     SocialPostViewSet,
     DistrictViewSet,
@@ -26,4 +28,7 @@ urlpatterns = [
     path("map/summary/", MapSummaryView.as_view(), name="map_summary"),
     path("trends/sentiment/", SentimentTrendView.as_view(), name="sentiment_trends"),
     path("stats/overview/", OverviewStatsView.as_view(), name="overview_stats"),
+
+    # Manual ingestion — accepts copy-pasted Reddit / X posts.
+    path("ingest/", IngestAPIView.as_view(), name="ingest"),
 ]

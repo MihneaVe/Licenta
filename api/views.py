@@ -6,7 +6,7 @@ from django.db.models import Avg, Count, Q
 from django.utils import timezone
 from datetime import timedelta
 
-from backend.apps.analytics.models import (
+from apps.analytics.models import (
     SocialPost,
     District,
     DistrictScore,

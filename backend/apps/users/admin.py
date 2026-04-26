@@ -1,8 +1,14 @@
 from django.contrib import admin
-from .models import UserProfile
+from .models import Profile, User
 
-@admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'bio', 'location', 'birth_date')
-    search_fields = ('user__username', 'bio', 'location')
-    list_filter = ('location', 'birth_date')
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ("username", "email", "created_at")
+    search_fields = ("username", "email")
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "bio")
+    search_fields = ("user__username", "bio")

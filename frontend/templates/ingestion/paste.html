@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse — Manual Ingestion</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        .ingest-container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+        .ingest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 720px) { .ingest-grid { grid-template-columns: 1fr; } }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .field textarea {
+            width: 100%; min-height: 220px; padding: 10px;
+            font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+            font-size: 13px; border: 1px solid #c7c7c7; border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .field select {
+            padding: 8px; border: 1px solid #c7c7c7; border-radius: 6px;
+            font-size: 14px;
+        }
+        .actions { display: flex; gap: 12px; align-items: center; }
+        .result {
+            margin-top: 24px; padding: 16px; border-radius: 6px;
+            background: #fff; border: 1px solid #dddddd;
+        }
+        .result.error { background: #fdecea; border-color: #f5c6cb; color: #6e1c20; }
+        .result.success { background: #eaf6ec; border-color: #c3e6cb; color: #1e4620; }
+        .result .meta { font-size: 13px; color: #555; margin-top: 8px; }
+        .result pre {
+            margin-top: 12px; padding: 12px; background: #f7f7f9;
+            border: 1px solid #ececec; border-radius: 4px;
+            font-size: 12px; max-height: 360px; overflow: auto;
+        }
+        .hint { color: #666; font-size: 13px; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CivicPulse</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'ingestion:paste' %}">Ingestion</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="ingest-container">
+        <h2>Manual ingestion</h2>
+        <p class="hint">
+            Paste a Reddit thread or an X / Twitter post below. The text is
+            cleaned (URLs, mentions, emoji and UI noise removed) and stored
+            in PostgreSQL, ready for the NLP pipeline to pick up on its
+            next run.
+        </p>
+
+        <form id="ingest-form">
+            {% csrf_token %}
+            <div class="field">
+                <label for="source">Source</label>
+                <select id="source" name="source" required>
+                    {% for src in sources %}
+                        <option value="{{ src }}">{{ src|capfirst }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="raw_text">Raw paste</label>
+                <textarea id="raw_text" name="raw_text"
+                    placeholder="Paste the post here — title and body, with whatever metadata Reddit/X copies along."
+                    required></textarea>
+                <p class="hint">JSON exported from <code>r/&lt;sub&gt;/comments/&lt;id&gt;.json</code> works too.</p>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="button">Ingest</button>
+                <span id="status"></span>
+            </div>
+        </form>
+
+        <div id="result" class="result" hidden></div>
+    </main>
+
+    <script>
+        (function () {
+            const form = document.getElementById("ingest-form");
+            const resultEl = document.getElementById("result");
+            const statusEl = document.getElementById("status");
+
+            function csrfToken() {
+                const input = form.querySelector("[name=csrfmiddlewaretoken]");
+                return input ? input.value : "";
+            }
+
+            function showResult(envelope, httpStatus) {
+                resultEl.hidden = false;
+                resultEl.classList.remove("error", "success");
+                resultEl.classList.add("success");
+
+                const c = envelope.cleaning || {};
+                const p = envelope.payload || {};
+                const stateLabel = envelope.duplicate ? "duplicate (already ingested)" : "newly stored";
+
+                resultEl.innerHTML = `
+                    <strong>Stored as post #${p.post_id}</strong> — ${stateLabel}.
+                    <div class="meta">
+                        ${c.word_count} words · ${c.char_count} chars ·
+                        removed ${c.removed_urls} URL(s),
+                        ${c.removed_mentions} mention(s),
+                        ${c.removed_hashtags} hashtag(s).
+                    </div>
+                    <div class="meta">Clean payload (NLP pipeline input):</div>
+                    <pre>${escapeHtml(JSON.stringify(p, null, 2))}</pre>
+                `;
+            }
+
+            function showError(message) {
+                resultEl.hidden = false;
+                resultEl.classList.remove("success", "error");
+                resultEl.classList.add("error");
+                resultEl.textContent = message;
+            }
+
+            function escapeHtml(s) {
+                return s
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+            }
+
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                statusEl.textContent = "Ingesting…";
+                resultEl.hidden = true;
+
+                const body = {
+                    source: form.source.value,
+                    raw_text: form.raw_text.value,
+                };
+
+                try {
+                    const response = await fetch("{% url 'ingestion:api' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken(),
+                        },
+                        body: JSON.stringify(body),
+                    });
+                    const data = await response.json();
+                    statusEl.textContent = "";
+                    if (!response.ok) {
+                        showError(data.error || data.detail || JSON.stringify(data));
+                        return;
+                    }
+                    showResult(data, response.status);
+                } catch (err) {
+                    statusEl.textContent = "";
+                    showError("Network error: " + err.message);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

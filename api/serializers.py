@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from backend.apps.analytics.models import (
+from apps.analytics.models import (
     SocialPost,
     District,
     DistrictScore,
     TopicCategory,
     Mood,
 )
-from backend.apps.users.models import User
+from apps.users.models import User
 
 
 class TopicCategorySerializer(serializers.ModelSerializer):

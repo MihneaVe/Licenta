@@ -46,8 +46,14 @@ class SocialPost(models.Model):
 
     SOURCE_CHOICES = [
         ("reddit", "Reddit"),
+        ("x", "X (Twitter)"),
         ("google_maps", "Google Maps"),
         ("facebook", "Facebook Groups"),
+    ]
+
+    INGESTION_METHODS = [
+        ("scraper", "Automated scraper"),
+        ("manual_paste", "Manual paste (ingestion module)"),
     ]
 
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES)
@@ -92,6 +98,13 @@ class SocialPost(models.Model):
 
     # Language
     language = models.CharField(max_length=10, blank=True, default="ro")
+
+    # How this row entered the system. Lets the dashboard distinguish
+    # scraped vs. manually-pasted content for the evaluation chapter.
+    ingestion_method = models.CharField(
+        max_length=20, choices=INGESTION_METHODS,
+        default="scraper",
+    )
 
     # Timestamps
     original_date = models.DateTimeField(
