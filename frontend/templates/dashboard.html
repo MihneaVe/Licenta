@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Meter Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Mood Meter Dashboard</h1>
+    </header>
+    <main>
+        <section id="mood-stats">
+            <h2>Your Mood Statistics</h2>
+            <!-- Mood statistics will be displayed here -->
+        </section>
+        <section id="mood-input">
+            <h2>Share Your Mood</h2>
+            <form id="mood-form">
+                <label for="mood">Select your mood:</label>
+                <select id="mood" name="mood">
+                    <option value="happy">Happy</option>
+                    <option value="sad">Sad</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="angry">Angry</option>
+                    <option value="anxious">Anxious</option>
+                </select>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+        <section id="mood-history">
+            <h2>Your Mood History</h2>
+            <!-- Mood history will be displayed here -->
+        </section>
+    </main>
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
