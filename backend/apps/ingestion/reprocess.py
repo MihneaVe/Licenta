@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from datetime import date as date_cls, datetime, timezone
 from typing import Optional
 
-from django.db import transaction
+from django.db import close_old_connections, transaction
 from django.utils.dateparse import parse_datetime
 
 from apps.analytics.models import District, SocialPost
@@ -114,6 +114,12 @@ def reprocess_post(
         existing_title = ""
 
     fields = extractor.extract(raw_source, post.source, existing_title=existing_title)
+
+    # The LLM call above can take 1-3 minutes on CPU. Supabase's pgbouncer
+    # drops idle pooled connections in that window, so Django's cached
+    # cursor would dial a dead socket. Force a fresh connection before
+    # we touch the DB again.
+    close_old_connections()
 
     title = fields.title
     title_generated = False
