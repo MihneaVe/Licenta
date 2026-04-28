@@ -27,10 +27,17 @@ class OverpassClient:
         Returns:
             JSON response dict or None on failure.
         """
+        # Overpass enforces a non-default User-Agent — anonymous Python
+        # requests get HTTP 406 since 2024.
+        headers = {
+            "User-Agent": "civicpulse-thesis/1.0 (https://github.com/MihneaVe/Licenta)",
+            "Accept": "application/json",
+        }
         try:
             response = requests.post(
                 self.api_url,
                 data={"data": overpass_query},
+                headers=headers,
                 timeout=self.timeout,
             )
             response.raise_for_status()

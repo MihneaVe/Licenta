@@ -2,18 +2,51 @@ from django.db import models
 
 
 class District(models.Model):
-    """A city district/sector (e.g. Sector 1–6 in Bucharest)."""
+    """A geographic unit posts get assigned to.
+
+    The single ``District`` table now models three nested kinds:
+
+    * ``city``    — the municipality itself (București), default fallback.
+    * ``sector``  — Bucharest's six administrative sectors (Sector 1–6).
+    * ``quarter`` — traditional neighborhoods / cartiere (Aviației,
+      Băneasa, Crângași, Drumul Taberei, ~70 of them in total).
+
+    Quarters point at their parent sector via :attr:`parent`. The
+    optional ``boundary_geojson`` polygon and ``centroid_lat/lng``
+    centroid feed the Leaflet map view.
+    """
+
+    KIND_CHOICES = [
+        ("city", "City"),
+        ("sector", "Sector"),
+        ("quarter", "Quarter"),
+    ]
 
     name = models.CharField(max_length=100, unique=True)
     city = models.CharField(max_length=100, default="București")
+    kind = models.CharField(
+        max_length=10, choices=KIND_CHOICES, default="sector",
+        help_text="Hierarchy level — city → sector → quarter.",
+    )
+    parent = models.ForeignKey(
+        "self", on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="children",
+        help_text="Parent geographic unit (e.g. a quarter's sector).",
+    )
     boundary_geojson = models.JSONField(
         blank=True, null=True,
-        help_text="GeoJSON geometry for the district boundary",
+        help_text="GeoJSON polygon/multipolygon for the district boundary.",
     )
+    centroid_lat = models.FloatField(null=True, blank=True)
+    centroid_lng = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["kind", "name"]
+        indexes = [
+            models.Index(fields=["kind"]),
+            models.Index(fields=["parent"]),
+        ]
 
     def __str__(self):
         return f"{self.name}, {self.city}"

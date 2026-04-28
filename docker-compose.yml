@@ -1,44 +1,127 @@
-version: "3.9"
+# ----------------------------------------------------------------------
+# CivicPulse / social_mood_meter — local orchestration
+#
+# Default `docker compose up` brings up:
+#   web      — Django + DRF on http://localhost:8000
+#   redis    — task queue broker (used by celery profile only)
+#   postgres — local Postgres alternative to Supabase (offline dev)
+#
+# The web service talks to:
+#   * The DB you've configured in .env (Supabase by default; flip
+#     USE_SQLITE=1 for an in-container SQLite, or use the bundled
+#     `postgres` service via `--profile localdb`).
+#   * Ollama on the *host* machine via host.docker.internal
+#     (qwen2.5:7b for the LLM extractor; gemma3:1B for summaries).
+#
+# Profiles (opt-in services):
+#   --profile localdb    runs the local Postgres
+#   --profile pipeline   runs the NLP / scraper one-shot worker
+#   --profile celery     runs a celery worker against redis
+# ----------------------------------------------------------------------
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        INSTALL_PLAYWRIGHT: "0"
+        INSTALL_SPACY_MODEL: "0"
+    image: civicpulse:web
     ports:
       - "8000:8000"
     env_file:
       - .env
     volumes:
+      # Live source mount for hot-reload during development. Strip this
+      # in a production compose file so the image is the source of truth.
       - .:/app
+    extra_hosts:
+      # Lets the container reach Ollama running on the host.
+      - "host.docker.internal:host-gateway"
+    environment:
+      OLLAMA_HOST: "${OLLAMA_HOST:-http://host.docker.internal:11434}"
     depends_on:
       - redis
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: >
-      bash -c "
-        cd /app/backend &&
-        python manage.py migrate --noinput &&
-        gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
-      "
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/feed/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
   worker:
-    build: .
+    # One-shot pipeline runner — kept off by default. Bring up with:
+    #   docker compose --profile pipeline up worker
+    build:
+      context: .
+      args:
+        INSTALL_PLAYWRIGHT: "1"
+        INSTALL_SPACY_MODEL: "1"
+    image: civicpulse:worker
     env_file:
       - .env
     volumes:
       - .:/app
-    depends_on:
-      - redis
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      OLLAMA_HOST: "${OLLAMA_HOST:-http://host.docker.internal:11434}"
+    depends_on:
+      - redis
     command: >
       bash -c "
         cd /app/backend &&
-        python manage.py run_pipeline
+        python manage.py migrate --noinput &&
+        python manage.py seed_bucharest_quarters &&
+        python manage.py reprocess_with_llm &&
+        python manage.py run_pipeline --process-only
       "
-    profiles:
-      - pipeline
+    profiles: ["pipeline"]
+
+  celery:
+    build:
+      context: .
+      args:
+        INSTALL_PLAYWRIGHT: "0"
+        INSTALL_SPACY_MODEL: "0"
+    image: civicpulse:web
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+    command: >
+      bash -c "
+        cd /app/backend &&
+        celery -A config worker --loglevel=info
+      "
+    profiles: ["celery"]
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    restart: unless-stopped
+
+  postgres:
+    # Local Postgres alternative to Supabase. Enable with:
+    #   docker compose --profile localdb up postgres web
+    # and set DB_HOST=postgres / DB_USER=civicpulse / DB_PASSWORD=civicpulse / USE_SQLITE=0
+    # in .env.
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: civicpulse
+      POSTGRES_USER: civicpulse
+      POSTGRES_PASSWORD: civicpulse
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    profiles: ["localdb"]
+
+volumes:
+  postgres_data:

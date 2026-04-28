@@ -1,4 +1,4 @@
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -88,3 +88,64 @@ def sentiment_stats_json(request):
         .annotate(count=Count("id"))
     )
     return JsonResponse(list(stats), safe=False)
+
+
+def map_view(request):
+    """Leaflet map of Bucharest quarters with per-quarter post counts."""
+    return render(request, "analytics/map.html", {})
+
+
+def quarters_geojson(request):
+    """``/feed/api/quarters.geojson`` — feeds the Leaflet map.
+
+    Returns one GeoJSON Feature per Bucharest district that has either
+    a centroid or a boundary polygon. Each feature carries ``post_count``
+    and ``avg_sentiment`` so the client can colour-code without a second
+    round-trip.
+    """
+    qs = (
+        District.objects
+        .annotate(
+            post_count=Count("posts"),
+            avg_sentiment=Avg("posts__sentiment_score"),
+        )
+        .filter(
+            Q(centroid_lat__isnull=False) | Q(boundary_geojson__isnull=False)
+        )
+        .order_by("kind", "name")
+    )
+
+    features = []
+    for d in qs:
+        if d.boundary_geojson:
+            geometry = d.boundary_geojson
+        elif d.centroid_lat is not None and d.centroid_lng is not None:
+            # GeoJSON expects [lng, lat] order.
+            geometry = {
+                "type": "Point",
+                "coordinates": [d.centroid_lng, d.centroid_lat],
+            }
+        else:
+            continue
+
+        features.append({
+            "type": "Feature",
+            "geometry": geometry,
+            "properties": {
+                "id": d.id,
+                "name": d.name,
+                "kind": d.kind,
+                "parent": d.parent.name if d.parent else None,
+                "post_count": d.post_count,
+                "avg_sentiment": (
+                    round(d.avg_sentiment, 4) if d.avg_sentiment is not None else None
+                ),
+            },
+        })
+
+    return JsonResponse(
+        {
+            "type": "FeatureCollection",
+            "features": features,
+        }
+    )

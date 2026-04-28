@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse — Hartă București</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        body { display: flex; flex-direction: column; }
+        header { flex: 0 0 auto; }
+        main { flex: 1 1 auto; min-height: 0; position: relative; }
+        #map { width: 100%; height: 100%; }
+        nav ul { list-style: none; padding: 0; display: flex; gap: 18px; margin: 0; }
+        nav ul li a { color: #fff; }
+
+        .legend {
+            background: #fff; padding: 10px 14px; border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15); font-size: 13px;
+            line-height: 1.5;
+        }
+        .legend strong { display: block; margin-bottom: 6px; font-size: 13px; }
+        .legend-row { display: flex; align-items: center; gap: 8px; }
+        .legend-dot {
+            display: inline-block; border-radius: 50%;
+            background: rgba(220, 53, 69, 0.55);
+            border: 1px solid rgba(220, 53, 69, 0.9);
+        }
+
+        .quarter-popup h3 { margin: 0 0 4px; font-size: 15px; }
+        .quarter-popup .meta { color: #6a6f76; font-size: 12px; margin-bottom: 6px; }
+        .quarter-popup .stat { font-size: 13px; }
+        .quarter-popup a {
+            display: inline-block; margin-top: 8px; color: #1d4ed8;
+            text-decoration: none; font-size: 13px;
+        }
+        .quarter-popup a:hover { text-decoration: underline; }
+
+        .info-panel {
+            position: absolute; top: 12px; left: 12px; z-index: 500;
+            background: #fff; padding: 10px 14px; border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15); font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CivicPulse — Hartă București</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'analytics:feed' %}">Feed</a></li>
+                <li><a href="{% url 'analytics:map' %}">Hartă</a></li>
+                <li><a href="{% url 'ingestion:paste' %}">Adaugă post</a></li>
+                <li><a href="/admin/">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="info-panel">
+            <strong>Cartiere</strong>
+            <div id="info-meta">se încarcă…</div>
+        </div>
+        <div id="map"></div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script>
+        (function () {
+            const map = L.map('map', { zoomControl: true }).setView([44.4378, 26.0969], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(map);
+
+            // Sentiment → colour. Defaults to neutral when unknown.
+            function colourFor(sent) {
+                if (sent === null || sent === undefined) return '#6b7280';   // grey
+                if (sent >= 0.3) return '#16a34a';                            // green
+                if (sent <= -0.3) return '#dc2626';                           // red
+                return '#f59e0b';                                             // amber
+            }
+            function radiusFor(count) {
+                // 0 posts → small grey halo; scale gently up to ~28px for many posts.
+                if (!count) return 6;
+                return Math.min(28, 8 + Math.sqrt(count) * 6);
+            }
+
+            const layerCity = L.layerGroup().addTo(map);
+            const layerSector = L.layerGroup().addTo(map);
+            const layerQuarter = L.layerGroup().addTo(map);
+
+            L.control.layers(null, {
+                'Oraș': layerCity,
+                'Sectoare': layerSector,
+                'Cartiere': layerQuarter,
+            }, { collapsed: false }).addTo(map);
+
+            const legend = L.control({ position: 'bottomright' });
+            legend.onAdd = function () {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML =
+                    '<strong>Legendă</strong>' +
+                    '<div class="legend-row"><span class="legend-dot" style="width:10px;height:10px"></span> 0 postări</div>' +
+                    '<div class="legend-row"><span class="legend-dot" style="width:18px;height:18px"></span> ~5 postări</div>' +
+                    '<div class="legend-row"><span class="legend-dot" style="width:24px;height:24px"></span> 20+ postări</div>' +
+                    '<div class="legend-row" style="margin-top:6px"><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:50%"></span> sentiment pozitiv</div>' +
+                    '<div class="legend-row"><span style="display:inline-block;width:10px;height:10px;background:#f59e0b;border-radius:50%"></span> mixt</div>' +
+                    '<div class="legend-row"><span style="display:inline-block;width:10px;height:10px;background:#dc2626;border-radius:50%"></span> negativ</div>' +
+                    '<div class="legend-row"><span style="display:inline-block;width:10px;height:10px;background:#6b7280;border-radius:50%"></span> nesentimentalizat</div>';
+                return div;
+            };
+            legend.addTo(map);
+
+            fetch("{% url 'analytics:quarters_geojson' %}")
+                .then(r => r.json())
+                .then(geo => {
+                    let total = 0, withPosts = 0;
+                    geo.features.forEach(f => {
+                        const p = f.properties;
+                        const target =
+                            p.kind === 'city' ? layerCity :
+                            p.kind === 'sector' ? layerSector :
+                            layerQuarter;
+
+                        const colour = colourFor(p.avg_sentiment);
+                        const radius = radiusFor(p.post_count);
+
+                        let layer;
+                        if (f.geometry && f.geometry.type === 'Point') {
+                            const [lng, lat] = f.geometry.coordinates;
+                            layer = L.circleMarker([lat, lng], {
+                                radius: radius,
+                                color: colour,
+                                weight: 1,
+                                fillColor: colour,
+                                fillOpacity: 0.55,
+                            });
+                        } else {
+                            layer = L.geoJSON(f, {
+                                style: {
+                                    color: colour,
+                                    weight: 2,
+                                    fillColor: colour,
+                                    fillOpacity: 0.25,
+                                },
+                            });
+                        }
+
+                        const sentText = p.avg_sentiment === null
+                            ? '—'
+                            : p.avg_sentiment.toFixed(2);
+                        const parentText = p.parent ? `<div class="meta">${p.parent}</div>` : '';
+                        layer.bindPopup(
+                            `<div class="quarter-popup">
+                                <h3>${p.name}</h3>
+                                ${parentText}
+                                <div class="stat"><strong>${p.post_count}</strong> postări</div>
+                                <div class="stat">Sentiment mediu: <strong>${sentText}</strong></div>
+                                <a href="/feed/?district=${p.id}">Vezi postările →</a>
+                            </div>`
+                        );
+                        layer.addTo(target);
+
+                        total += 1;
+                        if (p.post_count) withPosts += 1;
+                    });
+
+                    document.getElementById('info-meta').textContent =
+                        `${total} unități încărcate · ${withPosts} cu postări asignate`;
+                })
+                .catch(err => {
+                    document.getElementById('info-meta').textContent =
+                        'Eroare la încărcare: ' + err.message;
+                });
+        })();
+    </script>
+</body>
+</html>

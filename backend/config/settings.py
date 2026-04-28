@@ -87,6 +87,11 @@ else:
             'PORT': os.environ.get('DB_PORT', '5432'),
             'OPTIONS': {
                 'sslmode': 'require',
+                # Supabase's anon-pool default is 8s — too short for the
+                # large UPDATEs the reprocess command issues. 60s is well
+                # under the pool's idle limit and still keeps runaway
+                # queries from monopolising the connection.
+                'options': '-c statement_timeout=60000',
             },
         }
     }

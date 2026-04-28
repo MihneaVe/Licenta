@@ -1,8 +1,52 @@
-__pycache__
+# VCS
+.git/
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
 *.pyc
-.git
-.env
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Django runtime
+*.log
 db.sqlite3
-*.egg-info
-.venv
-node_modules
+db.sqlite3-journal
+backend/db.sqlite3
+backend/db.sqlite3-journal
+civicpulse_dev.sqlite3
+civicpulse_dev.sqlite3-journal
+media/
+staticfiles/
+backend/staticfiles/
+
+# Secrets / local config
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Frontend tooling (if any)
+node_modules/
+
+# Build artefacts
+build/
+dist/
+*.egg
+
+# Test / cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/

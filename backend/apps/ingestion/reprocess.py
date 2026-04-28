@@ -36,6 +36,14 @@ SECTOR_DISTRICT_TEMPLATE = "Sector {n}"
 DEFAULT_CITY = "București"
 
 
+def _load_quarter_lookup() -> dict[str, District]:
+    """Map canonical quarter names → District objects (one query)."""
+    return {
+        d.name: d
+        for d in District.objects.filter(kind="quarter")
+    }
+
+
 @dataclass
 class ReprocessResult:
     post_id: int
@@ -68,6 +76,7 @@ def reprocess_post(
     post: SocialPost,
     extractor: LLMExtractor,
     districts: dict[str, District],
+    quarters: dict[str, District] | None = None,
     *,
     force: bool = False,
     assign_default_to_bucharest: bool = True,
@@ -139,9 +148,11 @@ def reprocess_post(
             post.original_date = parsed_date
             changed = True
 
-    # District
+    # District — quarter > sector > city precedence.
     chosen_district: Optional[District] = None
-    if fields.mentioned_sector and 1 <= fields.mentioned_sector <= 6:
+    if fields.mentioned_quarter and quarters:
+        chosen_district = quarters.get(fields.mentioned_quarter)
+    if chosen_district is None and fields.mentioned_sector and 1 <= fields.mentioned_sector <= 6:
         chosen_district = districts.get(
             SECTOR_DISTRICT_TEMPLATE.format(n=fields.mentioned_sector)
         )
@@ -166,6 +177,8 @@ def reprocess_post(
         extra["llm_location_hint"] = fields.location_hint
     if fields.mentioned_sector:
         extra["llm_mentioned_sector"] = fields.mentioned_sector
+    if fields.mentioned_quarter:
+        extra["llm_mentioned_quarter"] = fields.mentioned_quarter
     post.extra_data = extra
 
     post.save()
@@ -179,7 +192,6 @@ def reprocess_post(
     )
 
 
-@transaction.atomic
 def reprocess_all(
     *,
     extractor: Optional[LLMExtractor] = None,
@@ -201,6 +213,7 @@ def reprocess_all(
         )
 
     districts = ensure_bucharest_districts()
+    quarters = _load_quarter_lookup()
 
     qs = SocialPost.objects.all().order_by("id")
     if only_ids:
@@ -209,10 +222,17 @@ def reprocess_all(
         qs = qs[:limit]
 
     results: list[ReprocessResult] = []
-    for post in qs.iterator():
+    # Iterate via a list so we don't hold a server-side cursor open
+    # for the whole LLM run (Supabase pooler kills idle connections).
+    # We deliberately do NOT wrap each iteration in transaction.atomic:
+    # the slow LLM call inside reprocess_post would keep a Supabase
+    # session open past the 8s statement timeout. post.save() is a
+    # single UPDATE — atomic at the DB level by itself.
+    posts = list(qs)
+    for post in posts:
         try:
             result = reprocess_post(
-                post, extractor, districts, force=force,
+                post, extractor, districts, quarters, force=force,
             )
             results.append(result)
         except Exception as exc:  # noqa: BLE001 — we want the loop to keep going

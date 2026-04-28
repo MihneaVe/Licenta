@@ -49,6 +49,7 @@ class ExtractedFields:
     author: str = ""
     date_iso: Optional[str] = None  # ISO 8601 if the LLM could resolve one
     mentioned_sector: Optional[int] = None  # 1..6 for "Sector 3" mentions
+    mentioned_quarter: str = ""  # canonical quarter name (e.g. "Drumul Taberei")
     location_hint: str = ""  # free-form place name (street, neighborhood)
     title_was_generated: bool = False
     raw_response: str = ""
@@ -60,7 +61,7 @@ class ExtractedFields:
 class LLMExtractor:
     """Re-extract structured fields from messy paste content using Ollama."""
 
-    DEFAULT_TIMEOUT = 120  # seconds — qwen2.5:7b on CPU can take a while
+    DEFAULT_TIMEOUT = 180  # seconds — qwen2.5:7b on CPU can take a while
 
     def __init__(
         self,
@@ -154,6 +155,23 @@ class LLMExtractor:
 
     # ------------------------------------------------------------------ prompt + calls
 
+    @staticmethod
+    def _quarter_hint() -> str:
+        """A short hint of representative quarter names for the prompt.
+
+        We deliberately don't pass the full 80+ canonical list — the
+        Python normalizer handles aliases / spelling drift downstream,
+        and a long hint pushes the 7B model past the 120s timeout on
+        CPU. A handful of varied names is enough to anchor what kind
+        of value we want.
+        """
+        return (
+            "Aviației, Băneasa, Berceni, Cotroceni, Crângași, "
+            "Drumul Taberei, Dorobanți, Floreasca, Ferentari, "
+            "Iancului, Lipscani, Militari, Pantelimon, Pipera, "
+            "Rahova, Tei, Titan, Unirii, Vitan, Ștefan cel Mare"
+        )
+
     def _build_prompt(self, raw_content: str, source: str, existing_title: str) -> str:
         source_hint = {
             "reddit": (
@@ -181,6 +199,16 @@ class LLMExtractor:
             )
         )
 
+        quarter_list = self._quarter_hint()
+        quarter_directive = (
+            'Pentru "mentioned_quarter": dacă textul menționează unul '
+            "dintre cartierele Bucureștiului din lista de mai jos (sau o "
+            "stradă / piață / zonă recunoscută din cartier), returnează "
+            "EXACT numele canonic din listă (cu diacritice). Altfel "
+            'returnează "".\n\n'
+            f"LISTA CARTIERE BUCUREȘTI: {quarter_list}\n"
+        )
+
         return (
             "Ești un parser care extrage metadate dintr-o postare de pe rețele "
             "sociale și răspunde STRICT cu un obiect JSON valid.\n\n"
@@ -195,9 +223,12 @@ class LLMExtractor:
             "lasă null — nu inventa o dată.)\n"
             '  "mentioned_sector": integer 1-6 (numărul sectorului '
             "Bucureștiului menționat în text, sau null)\n"
+            '  "mentioned_quarter": string (cartierul Bucureștiului din '
+            "lista de mai jos, sau \"\")\n"
             '  "location_hint": string (numele unei străzi, cartier sau '
             'punct de reper, sau "")\n\n'
             f"{title_directive}\n\n"
+            f"{quarter_directive}\n"
             "Păstrează diacriticele românești. Nu adăuga câmpuri extra. "
             "Nu pune comentarii. Nu folosi markdown. Nu pune ghilimele "
             "în jurul JSON-ului.\n\n"
@@ -285,12 +316,17 @@ class LLMExtractor:
             if isinstance(llm_sector, int) and 1 <= llm_sector <= 6:
                 sector = llm_sector
 
+        quarter = self._normalize_quarter_choice(
+            data.get("mentioned_quarter"), raw_content
+        )
+
         return ExtractedFields(
             title=title,
             body=body,
             author=author,
             date_iso=date_iso,
             mentioned_sector=sector,
+            mentioned_quarter=quarter,
             location_hint=(data.get("location_hint") or "").strip(),
         )
 
@@ -315,6 +351,41 @@ class LLMExtractor:
             except (TypeError, ValueError):
                 return None
         return None
+
+    @staticmethod
+    def _normalize_quarter_choice(llm_value, raw_content: str) -> str:
+        """Map the LLM's quarter answer onto a canonical quarter name.
+
+        Falls back to scanning the raw text for any canonical quarter
+        substring when the LLM left the field blank — quarter names are
+        distinctive enough that a substring match has very few false
+        positives in practice.
+        """
+        try:
+            from apps.analytics.bucharest_quarters import (
+                CANONICAL_NAMES,
+                normalize_quarter_name,
+            )
+        except Exception:
+            return ""
+
+        if isinstance(llm_value, str) and llm_value.strip():
+            canonical = normalize_quarter_name(llm_value.strip())
+            if canonical:
+                return canonical
+
+        # Substring fallback: look for any canonical name appearing in
+        # the raw text. Match the longest hit first so "Drumul Taberei"
+        # beats a generic "Drumul" partial.
+        text_lower = raw_content.lower()
+        hits = [
+            name for name in CANONICAL_NAMES
+            if name.lower() in text_lower
+        ]
+        if hits:
+            hits.sort(key=len, reverse=True)
+            return hits[0]
+        return ""
 
     @staticmethod
     def _clean_title(raw: str, max_words: int) -> str:
