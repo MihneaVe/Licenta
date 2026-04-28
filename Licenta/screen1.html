@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>City Pulse Live Feedback Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#137fec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101922",
+            },
+            fontFamily: {
+              "display": ["Public Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-slate-100 min-h-screen pb-20">
+<div class="sticky top-0 z-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">location_city</span>
+</div>
+<div>
+<h1 class="text-lg font-bold leading-tight">City Pulse</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Live Feed</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnBVt2f_m70_P8qI8hH4mLDzVoROIL5bqJ2Tikjl1SDZHcazI7ooB4cQVd4qRc2HxAhgILly8fSNG2JTZT1JgOJiwiwZSSQ91oZPrqawXMVbpCW3krmkVjufwU7IfAiU9ZEiZwYkuYH5AQ4i__YiEWAPSaMPdN1jtkg_ETj3VxOJQIDoYmRSvWDbEUABAILacoFvWvIfq2e8jZOLBKxvZav0AVkzt3ztW18WaSCZdSXWdjPAzmKU8obgjAb5eRCZuxCnf7pHUM8i8"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4 pb-3 overflow-x-auto hide-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 px-3 text-sm font-medium text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>Category</span>
+<span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+</button>
+<div class="w-[1px] h-6 bg-slate-200 dark:bg-slate-700 shrink-0 mx-1"></div>
+<button class="flex h-9 shrink-0 items-center justify-center rounded-full bg-slate-900 dark:bg-white px-4 text-sm font-medium text-white dark:text-slate-900 shadow-sm">
+                All
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 text-sm font-medium text-slate-600 dark:text-slate-300 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                Positive
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 text-sm font-medium text-slate-600 dark:text-slate-300 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                Neutral
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 px-4 text-sm font-medium text-slate-600 dark:text-slate-300 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                Negative
+            </button>
+</div>
+</div>
+<main class="flex flex-col gap-4 p-4">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-sm font-bold text-blue-700 dark:text-blue-300">
+                        JD
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Jane Doe</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">2m ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> Central District
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/20 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300 ring-1 ring-inset ring-blue-700/10">
+                    Infrastructure
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                The new bus stops on Main St are great, but the electronic schedules have been offline for two days. Can this be fixed? It's causing confusion during rush hour.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-yellow-600 dark:text-yellow-400">Neutral-Positive</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-gradient-to-r from-yellow-400 to-green-500 w-[65%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-sm font-bold text-amber-700 dark:text-amber-300">
+                        MS
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Mark Smith</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">15m ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> North Sector
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-900/20 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-300 ring-1 ring-inset ring-amber-700/10">
+                    Sanitation
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                Trash collection was missed again this week in the residential area. The bins are overflowing and attracting pests. This is the third time this month.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-red-600 dark:text-red-400">Negative</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-red-500 w-[85%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-sm font-bold text-green-700 dark:text-green-300">
+                        AL
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Anna Lee</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">1h ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> West Park
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-green-50 dark:bg-green-900/20 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:text-green-300 ring-1 ring-inset ring-green-700/10">
+                    Parks
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                Absolutely love the new playground equipment at West Park! My kids are thrilled. Great job by the city planning team.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-green-600 dark:text-green-400">Positive</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-green-500 w-[95%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-sm font-bold text-purple-700 dark:text-purple-300">
+                        RJ
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Rajiv Jain</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">2h ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> Downtown
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-purple-50 dark:bg-purple-900/20 px-2.5 py-0.5 text-xs font-semibold text-purple-700 dark:text-purple-300 ring-1 ring-inset ring-purple-700/10">
+                    Traffic
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                The traffic light at 5th and Elm is completely out. It's creating a massive bottleneck and is very dangerous for pedestrians.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-red-600 dark:text-red-400">Critical</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-red-600 w-[92%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-sm font-bold text-teal-700 dark:text-teal-300">
+                        SB
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Sarah B.</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">3h ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> South Gate
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-teal-50 dark:bg-teal-900/20 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:text-teal-300 ring-1 ring-inset ring-teal-700/10">
+                    Utilities
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                Water pressure has been consistently low for the past 3 evenings. Is there maintenance going on?
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-orange-500 dark:text-orange-400">Negative-Neutral</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-gradient-to-r from-red-400 to-orange-400 w-[45%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-sm font-bold text-slate-600 dark:text-slate-300">
+                        DK
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">David Kim</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">5h ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> East Side
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 ring-1 ring-inset ring-slate-700/10">
+                    General
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                Just wanted to say the new street lights make the neighborhood feel much safer at night.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-green-600 dark:text-green-400">Positive</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-green-500 w-[80%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-sm font-bold text-pink-700 dark:text-pink-300">
+                        EM
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Elena M.</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">6h ago</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> Central Park
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-pink-50 dark:bg-pink-900/20 px-2.5 py-0.5 text-xs font-semibold text-pink-700 dark:text-pink-300 ring-1 ring-inset ring-pink-700/10">
+                    Events
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                The summer festival schedule seems a bit crowded. Noise levels might be an issue for nearby residents this year.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-yellow-600 dark:text-yellow-400">Neutral</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-yellow-400 w-[55%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-sm font-bold text-indigo-700 dark:text-indigo-300">
+                        JT
+                    </div>
+<div>
+<div class="flex items-center gap-2">
+<p class="text-sm font-bold text-slate-900 dark:text-white">James T.</p>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<p class="text-xs text-slate-500">Yesterday</p>
+</div>
+<p class="text-xs text-slate-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">place</span> Tech Hub
+                        </p>
+</div>
+</div>
+<span class="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-900/20 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 ring-1 ring-inset ring-indigo-700/10">
+                    Public Wi-Fi
+                </span>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
+                Public Wi-Fi speeds in the innovation district are fantastic! Really helps with working remotely outdoors.
+            </p>
+<div class="mb-4">
+<div class="flex justify-between text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">
+<span>Sentiment Analysis</span>
+<span class="text-green-600 dark:text-green-400">Positive</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+<div class="h-full bg-green-500 w-[98%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 mt-1">
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">flag</span>
+                    Flag
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">assignment_ind</span>
+                    Assign
+                </button>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors text-xs font-medium">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Context
+                </button>
+</div>
+</div>
+<div class="h-8"></div>
+</main>
+<nav class="fixed bottom-0 w-full z-30 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex justify-around items-end pb-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Overview</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[24px]">map</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Heatmap</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[24px]">tag</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Topics</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary group" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1, 'wght' 400;">rss_feed</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Live Feed</p>
+</a>
+</div>
+<div class="h-4 bg-white dark:bg-slate-900"></div>
+</nav>
+
+</body></html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>City Pulse Admin - Sentiment Heatmap</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+        .heatmap-gradient {
+            background: linear-gradient(to right, #ef4444, #f59e0b, #22c55e);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<!-- Sidebar -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col fixed h-screen">
+<div class="p-6 flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div>
+<h1 class="text-base font-bold leading-tight">City Pulse</h1>
+<p class="text-xs text-slate-500">Admin Console</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl font-fill">map</span>
+<span class="text-sm font-medium">Heatmap</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">monitoring</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">description</span>
+<span class="text-sm font-medium">Reports</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<div class="mt-4 flex items-center gap-3 px-3">
+<div class="size-8 rounded-full bg-slate-200" data-alt="User profile avatar circle placeholder"></div>
+<div class="overflow-hidden">
+<p class="text-xs font-semibold truncate">Alex Rivera</p>
+<p class="text-[10px] text-slate-500">Super Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+<!-- Header -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-8 z-10">
+<div class="flex items-center gap-6">
+<h2 class="text-lg font-bold">Live Sentiment Heatmap</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary" placeholder="Search districts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-sm">download</span>
+                    Export Data
+                </button>
+</div>
+</header>
+<!-- Scrollable Dashboard Content -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8">
+<!-- Top Section: Map & Hotspots -->
+<div class="grid grid-cols-12 gap-6 h-[500px]">
+<!-- Interactive Map Area -->
+<div class="col-span-12 lg:col-span-8 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden relative group">
+<div class="absolute inset-0 bg-slate-200 dark:bg-slate-800" data-alt="Interactive city map with color coded sentiment regions" data-location="San Francisco" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDm-UdwDZ-IYLROIuOig_uPMcJ7kaMrb6WN-mmdf3fpLqOhX8wYYFqBpSSUUEhe907hstdrytS_6T9-PaRthc4ckKZR5jJXjMjDqisl7Dhi3fIzG5SGh2eC2MRubK6XftoMAkHbFJDljQxy1DUybg89HAuK7Zrlt2csDsFQIKu5Y5bcUC1Mox7mzZIchRqy2F5VZC9Fy46r3EqG9U25jkxEdxckVi0n681xijNL_54jokHI-Sf8UiqH1QoRROJy64pEVwOx2shlIhc'); background-size: cover; background-position: center;">
+<!-- Simulated Heatmap Overlays -->
+<div class="absolute top-1/4 left-1/3 size-32 bg-red-500/30 rounded-full blur-3xl animate-pulse"></div>
+<div class="absolute bottom-1/4 right-1/4 size-48 bg-green-500/20 rounded-full blur-3xl"></div>
+<div class="absolute top-1/2 right-1/2 size-24 bg-orange-500/40 rounded-full blur-2xl"></div>
+</div>
+<!-- Map Controls -->
+<div class="absolute top-4 right-4 flex flex-col gap-2">
+<button class="size-10 bg-white dark:bg-slate-900 rounded-lg shadow-lg flex items-center justify-center border border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">add</span>
+</button>
+<button class="size-10 bg-white dark:bg-slate-900 rounded-lg shadow-lg flex items-center justify-center border border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200">remove</span>
+</button>
+<button class="size-10 bg-white dark:bg-slate-900 rounded-lg shadow-lg flex items-center justify-center border border-slate-200 dark:border-slate-800 hover:bg-slate-50">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200 font-fill">near_me</span>
+</button>
+</div>
+<!-- Legend -->
+<div class="absolute bottom-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl">
+<p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Sentiment Score</p>
+<div class="flex items-center gap-3">
+<span class="text-xs font-medium text-red-600">Critical</span>
+<div class="h-2 w-32 rounded-full heatmap-gradient"></div>
+<span class="text-xs font-medium text-green-600">Positive</span>
+</div>
+</div>
+</div>
+<!-- Sentiment Hotspots Panel -->
+<div class="col-span-12 lg:col-span-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+<div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h3 class="font-bold text-slate-900 dark:text-slate-100">Sentiment Hotspots</h3>
+<span class="text-xs bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 px-2 py-0.5 rounded-full font-bold">3 Critical Spikes</span>
+</div>
+<div class="flex-1 overflow-y-auto p-5 space-y-4">
+<!-- Hotspot Item 1 -->
+<div class="p-3 border border-red-100 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/10 rounded-lg">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold">Central District</span>
+<span class="text-xs font-black text-red-600">12% ↓</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">Significant spike in negative sentiment regarding "public transport delays" and "waste management".</p>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-600 rounded">Transport</span>
+<span class="text-[10px] px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-600 rounded">Urgent</span>
+</div>
+</div>
+<!-- Hotspot Item 2 -->
+<div class="p-3 border border-orange-100 dark:border-orange-900/30 bg-orange-50/50 dark:bg-orange-900/10 rounded-lg">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold">South Quay</span>
+<span class="text-xs font-black text-orange-600">5% ↓</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">Emerging issues around "street lighting" in the waterfront area.</p>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] px-2 py-0.5 bg-orange-100 dark:bg-orange-900/40 text-orange-600 rounded">Infrastructure</span>
+</div>
+</div>
+<!-- Hotspot Item 3 -->
+<div class="p-3 border border-green-100 dark:border-green-900/30 bg-green-50/50 dark:bg-green-900/10 rounded-lg">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-bold">East Gardens</span>
+<span class="text-xs font-black text-green-600">18% ↑</span>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">Positive feedback regarding the new "community park" opening.</p>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] px-2 py-0.5 bg-green-100 dark:bg-green-900/40 text-green-600 rounded">Amenities</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: District Breakdown -->
+<div>
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="text-xl font-bold">District Breakdown</h3>
+<p class="text-sm text-slate-500">Comparative sentiment scores and NLP-extracted tags</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 text-xs font-bold bg-white border border-slate-200 rounded-lg hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800">Filter by Category</button>
+<button class="px-3 py-1.5 text-xs font-bold bg-white border border-slate-200 rounded-lg hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800">Sort by Score</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-slate-900 dark:text-slate-100">North Heights</span>
+<span class="text-sm font-bold text-green-500">82%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mb-6">
+<div class="bg-green-500 h-2 rounded-full" style="width: 82%"></div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Issues</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">Safety</span>
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">Education</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded">+3</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-slate-900 dark:text-slate-100">Old Town</span>
+<span class="text-sm font-bold text-red-500">34%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mb-6">
+<div class="bg-red-500 h-2 rounded-full" style="width: 34%"></div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Issues</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded">Potholes</span>
+<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded">Trash Collection</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded">+1</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-slate-900 dark:text-slate-100">Tech Hub</span>
+<span class="text-sm font-bold text-orange-500">58%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mb-6">
+<div class="bg-orange-500 h-2 rounded-full" style="width: 58%"></div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Issues</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">Zoning</span>
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">Housing</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded">+4</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between mb-4">
+<span class="font-bold text-slate-900 dark:text-slate-100">Green Valley</span>
+<span class="text-sm font-bold text-green-500">76%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mb-6">
+<div class="bg-green-500 h-2 rounded-full" style="width: 76%"></div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top Issues</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">Parks</span>
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">Air Quality</span>
+<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded">+2</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer for additional space -->
+<div class="h-12"></div>
+</div>
+</main>
+</body></html>

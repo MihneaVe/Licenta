@@ -1,6 +1,7 @@
 from django.db.models import Avg, Count, Q
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from .models import District, SocialPost
 
@@ -90,8 +91,14 @@ def sentiment_stats_json(request):
     return JsonResponse(list(stats), safe=False)
 
 
+@xframe_options_exempt
 def map_view(request):
-    """Leaflet map of Bucharest quarters with per-quarter post counts."""
+    """Leaflet map of Bucharest quarters with per-quarter post counts.
+
+    ``@xframe_options_exempt`` lets the React dashboard at :5173 embed
+    this page in an ``<iframe>`` without browsers blocking it on the
+    default ``X-Frame-Options: DENY`` header Django emits.
+    """
     return render(request, "analytics/map.html", {})
 
 

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>City Pulse - Topics Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .sparkline {
+            height: 30px;
+            width: 100%;
+            background: linear-gradient(90deg, rgba(19,127,236,0.1) 0%, rgba(19,127,236,0) 100%);
+            clip-path: polygon(0% 80%, 10% 70%, 20% 85%, 30% 50%, 40% 60%, 50% 30%, 60% 55%, 70% 20%, 80% 45%, 90% 10%, 100% 40%, 100% 100%, 0% 100%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-64 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shrink-0">
+<div class="p-6 flex flex-col gap-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">analytics</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-tight">City Pulse</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Admin Console</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl">tag</span>
+<span class="text-sm font-bold">Topics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">bar_chart</span>
+<span class="text-sm font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+<span class="text-sm font-medium">Community</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 px-2 py-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+<div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+<img alt="Admin user avatar" data-alt="Close up portrait of a male administrative user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeN_wVibjoFvxVxQdG_WOeDmy7nFM0JuiZolCYRLsf6w9Qyt_04fj0IPAUjydcUESJe4OQNK0oJMTQNYNbxKnWRtKRAwUklOT-acoUqtGgSxJdMvKnuK9lg5vY9prO6-H8D01ms7_mpQMRa9yIJQtSL89phVIGm6QKRRHOihzHTbMAyzIyZn16Ccyw5wCkFtnvbSqw6PXe2BuoQHKy4ORLsc1_noME5yGmMo_ZKBUCryA_QvuHFhBY0DcZjCZusKb97eYZRFR5VCs"/>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold truncate">Marcus Chen</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Senior Coordinator</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">more_vert</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-8 py-4">
+<div class="flex items-center justify-between gap-4">
+<div class="flex items-center gap-6 flex-1">
+<h2 class="text-xl font-bold tracking-tight">Topics Overview</h2>
+<div class="flex-1 max-w-xl relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg pl-11 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400" placeholder="Search city topics, keywords or categories..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</div>
+<div class="flex gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span>All Areas</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span>High Volume</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold">
+<span>Urgent</span>
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span>Positive Sentiment</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span>Negative</span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</header>
+<div class="p-8 flex flex-col gap-8">
+<!-- Section 1: Trending Keywords -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold">Trending Keywords Cloud</h3>
+<button class="text-primary text-sm font-semibold flex items-center gap-1">
+                            Analyze Cloud <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 flex flex-wrap gap-3">
+<span class="px-4 py-2 rounded-full bg-primary/10 text-primary text-lg font-bold border border-primary/20">Public Transit</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-base font-medium">Pothole</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium">Garbage Collection</span>
+<span class="px-4 py-2 rounded-full bg-primary/20 text-primary text-xl font-extrabold border border-primary/30">New Park</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-lg font-semibold">Bicycle Lanes</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm">Street Lighting</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-base">Housing</span>
+<span class="px-4 py-2 rounded-full bg-primary/5 text-primary text-sm font-medium border border-primary/10">Air Quality</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-lg">Road Closure</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-base font-medium">Water Supply</span>
+<span class="px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold border border-primary/20">Recycling</span>
+<span class="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xl font-bold">Construction Noise</span>
+</div>
+</section>
+<!-- Section 2: Topic Detail Cards -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold">Detailed Topic Analysis</h3>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">grid_view</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-900 border border-transparent">
+<span class="material-symbols-outlined text-slate-400">list</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Card 1: Transport -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">directions_bus</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">1.2k</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Public Transport</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Bus delays and route suggestions</p>
+</div>
+<div class="sparkline bg-blue-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-primary">64% Positive</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 64%"></div>
+<div class="h-full bg-amber-500" style="width: 20%"></div>
+<div class="h-full bg-rose-500" style="width: 16%"></div>
+</div>
+</div>
+</div>
+<!-- Card 2: Roads -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">engineering</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">2.4k</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Roads &amp; Infrastructure</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Potholes and signal repairs</p>
+</div>
+<div class="sparkline bg-amber-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-rose-500">22% Positive</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 22%"></div>
+<div class="h-full bg-amber-500" style="width: 30%"></div>
+<div class="h-full bg-rose-500" style="width: 48%"></div>
+</div>
+</div>
+</div>
+<!-- Card 3: Sanitation -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">delete</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">842</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Waste &amp; Sanitation</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Collection times and missed pickups</p>
+</div>
+<div class="sparkline bg-purple-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-amber-500">45% Neutral</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 35%"></div>
+<div class="h-full bg-amber-500" style="width: 45%"></div>
+<div class="h-full bg-rose-500" style="width: 20%"></div>
+</div>
+</div>
+</div>
+<!-- Card 4: Parks -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">park</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">531</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Parks &amp; Recreation</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Playground maintenance and events</p>
+</div>
+<div class="sparkline bg-emerald-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-emerald-500">88% Positive</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 88%"></div>
+<div class="h-full bg-amber-500" style="width: 10%"></div>
+<div class="h-full bg-rose-500" style="width: 2%"></div>
+</div>
+</div>
+</div>
+<!-- Card 5: Safety -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">security</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">2.1k</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Public Safety</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Crime reports and police presence</p>
+</div>
+<div class="sparkline bg-rose-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-rose-500">65% Negative</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 15%"></div>
+<div class="h-full bg-amber-500" style="width: 20%"></div>
+<div class="h-full bg-rose-500" style="width: 65%"></div>
+</div>
+</div>
+</div>
+<!-- Card 6: Housing -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">house</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">940</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Housing &amp; Zoning</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Affordability and permit updates</p>
+</div>
+<div class="sparkline bg-indigo-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-amber-500">Neutral Trend</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 40%"></div>
+<div class="h-full bg-amber-500" style="width: 40%"></div>
+<div class="h-full bg-rose-500" style="width: 20%"></div>
+</div>
+</div>
+</div>
+<!-- Card 7: Environment -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">nature</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">678</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">Environmental</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Air quality and sustainability projects</p>
+</div>
+<div class="sparkline bg-teal-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-emerald-500">72% Positive</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 72%"></div>
+<div class="h-full bg-amber-500" style="width: 18%"></div>
+<div class="h-full bg-rose-500" style="width: 10%"></div>
+</div>
+</div>
+</div>
+<!-- Card 8: Utilities -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">water_drop</span>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold">1.5k</span>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly Volume</p>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-base">City Utilities</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Water, electricity, and broadband</p>
+</div>
+<div class="sparkline bg-cyan-500/5 rounded"></div>
+<div class="space-y-2 pt-2">
+<div class="flex justify-between text-[10px] font-bold">
+<span>SENTIMENT BREAKDOWN</span>
+<span class="text-primary">Steady</span>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="h-full bg-emerald-500" style="width: 50%"></div>
+<div class="h-full bg-amber-500" style="width: 35%"></div>
+<div class="h-full bg-rose-500" style="width: 15%"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

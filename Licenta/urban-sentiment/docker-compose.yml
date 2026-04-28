@@ -1,0 +1,35 @@
+services:
+  urban-sentiment-app:
+    container_name: urban-sentiment-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped
+    depends_on:
+      - map-service
+
+  map-service:
+    container_name: urban-sentiment-map
+    build:
+      context: ./map-service
+      dockerfile: Dockerfile
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./map-service:/app
+    environment:
+      - DB_HOST=db.ujdkiorhdynsrlkhrtcm.supabase.co
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - "DB_PASSWORD=&sH18jt10.m,mmcVE%qt"
+      - DB_NAME=postgres
+    restart: unless-stopped
+

@@ -2,14 +2,27 @@
 # CivicPulse / social_mood_meter — local orchestration
 #
 # Default `docker compose up` brings up:
-#   web      — Django + DRF on http://localhost:8000
+#   web      — Django + DRF on http://localhost:8000  (admin, ingestion,
+#                                                     /feed/, /feed/map/)
+#   frontend — React 19 + Vite on http://localhost:5173
+#                                                     (UrbanPulse dashboard)
 #   redis    — task queue broker (used by celery profile only)
-#   postgres — local Postgres alternative to Supabase (offline dev)
+#
+# The two app tiers share Supabase as their single source of truth:
+#
+#   ┌───────────┐   write     ┌──────────┐   SQL view "feedbacks"   ┌───────────┐
+#   │  Django   │ ──────────▶ │ Supabase │ ◀─────────────────────── │  React    │
+#   │  /ingest/ │   read      │ Postgres │     read (anon role)     │  :5173    │
+#   └───────────┘             └──────────┘                          └───────────┘
+#       │                          ▲                                      │
+#       │                          │     iframe /feed/map/                │
+#       └──── Ollama qwen2.5:7b    └──────────────────────────────────────┘
+#                                  (http://localhost:8000)
 #
 # The web service talks to:
-#   * The DB you've configured in .env (Supabase by default; flip
-#     USE_SQLITE=1 for an in-container SQLite, or use the bundled
-#     `postgres` service via `--profile localdb`).
+#   * The DB in .env (Supabase by default; flip USE_SQLITE=1 for an
+#     in-container SQLite, or use the bundled `postgres` service via
+#     `--profile localdb`).
 #   * Ollama on the *host* machine via host.docker.internal
 #     (qwen2.5:7b for the LLM extractor; gemma3:1B for summaries).
 #
@@ -48,6 +61,33 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
+
+  frontend:
+    # React 19 + Vite 7 dashboard (Licenta/urban-sentiment).
+    # Reads the same Supabase project as the Django backend through the
+    # `feedbacks` SQL view that migration analytics/0003 installs.
+    # Auth0 credentials and Supabase keys come from
+    # Licenta/urban-sentiment/.env (VITE_* vars).
+    build:
+      context: ./Licenta/urban-sentiment
+      dockerfile: Dockerfile
+    image: civicpulse:frontend
+    container_name: civicpulse-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./Licenta/urban-sentiment:/app
+      # Anonymous mount keeps host node_modules out of the container,
+      # so Linux-only native deps inside the image don't get clobbered.
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      # Lets Heatmap.jsx iframe Django's /feed/map/ at the right host.
+      VITE_DJANGO_URL: "${VITE_DJANGO_URL:-http://localhost:8000}"
+    depends_on:
+      - web
     restart: unless-stopped
 
   worker:
