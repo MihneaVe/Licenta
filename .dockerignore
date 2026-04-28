@@ -50,3 +50,18 @@ dist/
 .ruff_cache/
 .coverage
 htmlcov/
+
+# React frontend tooling — built into its own image, must NOT ship
+# inside the Django context. The auth0 skill symlinks are also broken
+# and would crash the COPY step.
+Licenta/urban-sentiment/node_modules/
+Licenta/urban-sentiment/dist/
+Licenta/urban-sentiment/.vite/
+Licenta/urban-sentiment/.env
+Licenta/urban-sentiment/.env.local
+Licenta/.agent/
+Licenta/.agents/
+Licenta/.vscode/
+Licenta/secrets
+Licenta/skills-lock.json
+
