@@ -1,27 +1,90 @@
-from django.shortcuts import render
+from django.db.models import Avg, Count
 from django.http import JsonResponse
-from django.db.models import Count, Avg
-from .models import SocialPost, District, DistrictScore
+from django.shortcuts import render
+
+from .models import District, SocialPost
 
 
-def mood_overview(request):
-    posts = SocialPost.objects.select_related("district").all()[:100]
-    return render(request, 'analytics/mood_overview.html', {'posts': posts})
+def feed_view(request):
+    """Resident-facing feed of all ingested civic posts (real DB rows).
+
+    Replaces the legacy mock mood form. Posts are rendered with the
+    LLM-extracted title (when available), the original/cleaned author,
+    the source badge, and the assigned district.
+
+    Query params:
+        ?source=reddit|x   filter by platform
+        ?district=<id>     filter by district
+        ?q=<text>          full-text search in content
+    """
+    qs = (
+        SocialPost.objects
+        .select_related("district")
+        .order_by("-original_date", "-scraped_at")
+    )
+
+    source = request.GET.get("source")
+    if source in ("reddit", "x"):
+        qs = qs.filter(source=source)
+
+    district_id = request.GET.get("district")
+    if district_id and district_id.isdigit():
+        qs = qs.filter(district_id=int(district_id))
+
+    q = request.GET.get("q", "").strip()
+    if q:
+        qs = qs.filter(content__icontains=q)
+
+    posts = list(qs[:200])
+
+    # Decorate each row with the LLM title (if present) and a body excerpt.
+    for p in posts:
+        extra = p.extra_data or {}
+        p.display_title = (extra.get("title") or "").strip() or _fallback_title(p.content)
+        p.title_was_generated = bool(extra.get("llm_title_generated"))
+        p.body_excerpt = _excerpt(p.content, 360)
+
+    districts = District.objects.annotate(post_count=Count("posts")).order_by("name")
+
+    summary = SocialPost.objects.aggregate(
+        total=Count("id"),
+        avg_sent=Avg("sentiment_score"),
+    )
+
+    return render(request, "analytics/feed.html", {
+        "posts": posts,
+        "districts": districts,
+        "summary": summary,
+        "active_source": source or "",
+        "active_district": int(district_id) if district_id and district_id.isdigit() else None,
+        "search_query": q,
+    })
 
 
-def mood_statistics(request):
-    sentiment_stats = (
+def _excerpt(text: str, limit: int) -> str:
+    if not text:
+        return ""
+    text = text.strip()
+    if len(text) <= limit:
+        return text
+    cut = text[:limit].rsplit(" ", 1)[0]
+    return cut + "…"
+
+
+def _fallback_title(content: str) -> str:
+    """When neither parser nor LLM gave us a title, use the first sentence."""
+    if not content:
+        return "(fără titlu)"
+    head = content.strip().split(".", 1)[0].strip()
+    if len(head) > 80:
+        head = head[:80].rsplit(" ", 1)[0] + "…"
+    return head or "(fără titlu)"
+
+
+def sentiment_stats_json(request):
+    """Lightweight JSON endpoint kept for backward compat with old JS."""
+    stats = (
         SocialPost.objects.values("sentiment_label")
         .annotate(count=Count("id"))
     )
-    return JsonResponse(list(sentiment_stats), safe=False)
-
-
-def district_overview(request):
-    districts = District.objects.annotate(
-        post_count=Count("posts"),
-        avg_sentiment=Avg("posts__sentiment_score"),
-    )
-    return render(request, 'analytics/district_overview.html', {
-        'districts': districts,
-    })
+    return JsonResponse(list(stats), safe=False)

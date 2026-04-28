@@ -6,14 +6,17 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # REST API (analytics + ingestion live here too as `/api/ingest/`).
+    # REST API (analytics queries + ingestion endpoint).
     path('api/', include('api.endpoints')),
 
-    # Manual paste UI — replaces the legacy mock-mood dashboard.
+    # Resident-facing feed of real ingested posts.
+    path('feed/', include('apps.analytics.urls', namespace='analytics')),
+
+    # Manual paste UI for adding new posts.
     path('ingest/', include('apps.ingestion.urls', namespace='ingestion')),
 
-    # Old entry points point at the new ingestion page so existing
-    # bookmarks keep working.
-    path('', RedirectView.as_view(pattern_name='ingestion:paste', permanent=False), name='index'),
-    path('dashboard/', RedirectView.as_view(pattern_name='ingestion:paste', permanent=False), name='dashboard'),
+    # Old entry points keep working — both land on the live feed now,
+    # which is the natural homepage for residents.
+    path('', RedirectView.as_view(pattern_name='analytics:feed', permanent=False), name='index'),
+    path('dashboard/', RedirectView.as_view(pattern_name='analytics:feed', permanent=False), name='dashboard'),
 ]

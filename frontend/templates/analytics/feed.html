@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse — Feed București</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        :root {
+            --reddit: #FF4500;
+            --x: #1d9bf0;
+            --gen: #6f42c1;
+            --bg: #f7f7f9;
+            --card: #ffffff;
+            --border: #e3e3e8;
+            --muted: #6a6f76;
+        }
+        body { background: var(--bg); }
+        .feed-container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+        .summary-bar {
+            display: flex; gap: 16px; flex-wrap: wrap;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 8px; padding: 14px 18px; margin-bottom: 18px;
+        }
+        .summary-bar .stat { font-size: 14px; }
+        .summary-bar .stat strong { font-size: 18px; display: block; }
+
+        .filter-row {
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+            margin-bottom: 18px;
+        }
+        .filter-row form { display: flex; gap: 8px; align-items: center; }
+        .filter-row input[type="search"] {
+            padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+            font-size: 14px; width: 240px;
+        }
+        .pill {
+            display: inline-block; padding: 5px 12px; border-radius: 999px;
+            font-size: 13px; text-decoration: none; color: var(--muted);
+            border: 1px solid var(--border); background: var(--card);
+        }
+        .pill.active { background: #1f2937; color: #fff; border-color: #1f2937; }
+        .pill .count { color: var(--muted); margin-left: 6px; }
+        .pill.active .count { color: #c7d2fe; }
+
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 8px; padding: 18px 20px; margin-bottom: 14px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .card-head {
+            display: flex; justify-content: space-between; gap: 12px;
+            align-items: baseline; margin-bottom: 8px;
+        }
+        .card-title {
+            font-size: 17px; font-weight: 600; color: #111;
+            margin: 0; line-height: 1.3;
+        }
+        .card-title .gen-badge {
+            font-size: 10px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #fff; background: var(--gen);
+            padding: 2px 6px; border-radius: 3px; margin-left: 8px;
+            vertical-align: middle;
+        }
+        .source-badge {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; color: #fff; padding: 3px 8px;
+            border-radius: 4px; flex-shrink: 0;
+        }
+        .source-badge.reddit { background: var(--reddit); }
+        .source-badge.x { background: var(--x); }
+
+        .card-meta {
+            font-size: 13px; color: var(--muted); margin-bottom: 10px;
+            display: flex; gap: 12px; flex-wrap: wrap;
+        }
+        .card-meta .dot { color: #ccc; }
+        .card-meta a { color: var(--muted); text-decoration: none; }
+        .card-meta a:hover { text-decoration: underline; }
+
+        .card-body { font-size: 15px; line-height: 1.55; color: #222; white-space: pre-wrap; }
+
+        .card-footer {
+            margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border);
+            font-size: 12px; color: var(--muted);
+            display: flex; gap: 14px; flex-wrap: wrap;
+        }
+        .empty {
+            text-align: center; padding: 60px 20px; color: var(--muted);
+            background: var(--card); border-radius: 8px; border: 1px dashed var(--border);
+        }
+        nav ul { list-style: none; padding: 0; display: flex; gap: 18px; margin: 0; }
+        nav ul li a { color: #fff; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CivicPulse — București</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'analytics:feed' %}">Feed</a></li>
+                <li><a href="{% url 'ingestion:paste' %}">Adaugă post</a></li>
+                <li><a href="/admin/">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="feed-container">
+        <div class="summary-bar">
+            <div class="stat">
+                <strong>{{ summary.total }}</strong>
+                postări totale
+            </div>
+            {% if summary.avg_sent %}
+            <div class="stat">
+                <strong>{{ summary.avg_sent|floatformat:2 }}</strong>
+                sentiment mediu
+            </div>
+            {% endif %}
+            <div class="stat">
+                <strong>{{ districts|length }}</strong>
+                districte
+            </div>
+        </div>
+
+        <div class="filter-row">
+            <a class="pill {% if not active_source %}active{% endif %}"
+               href="?{% if search_query %}q={{ search_query }}{% endif %}">Toate</a>
+            <a class="pill {% if active_source == 'reddit' %}active{% endif %}"
+               href="?source=reddit{% if search_query %}&q={{ search_query }}{% endif %}">Reddit</a>
+            <a class="pill {% if active_source == 'x' %}active{% endif %}"
+               href="?source=x{% if search_query %}&q={{ search_query }}{% endif %}">X</a>
+
+            <span style="flex: 1"></span>
+
+            <form method="get" action="{% url 'analytics:feed' %}">
+                {% if active_source %}<input type="hidden" name="source" value="{{ active_source }}">{% endif %}
+                {% if active_district %}<input type="hidden" name="district" value="{{ active_district }}">{% endif %}
+                <input type="search" name="q" value="{{ search_query }}" placeholder="Caută în conținut…">
+                <button type="submit" class="pill">Caută</button>
+            </form>
+        </div>
+
+        <div class="filter-row">
+            {% for d in districts %}
+                {% if d.post_count %}
+                <a class="pill {% if active_district == d.id %}active{% endif %}"
+                   href="?district={{ d.id }}{% if active_source %}&source={{ active_source }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">
+                    {{ d.name }}<span class="count">{{ d.post_count }}</span>
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% for post in posts %}
+            <article class="card">
+                <div class="card-head">
+                    <h2 class="card-title">
+                        {{ post.display_title }}
+                        {% if post.title_was_generated %}<span class="gen-badge" title="Titlu generat de LLM">AI</span>{% endif %}
+                    </h2>
+                    <span class="source-badge {{ post.source }}">{{ post.source }}</span>
+                </div>
+
+                <div class="card-meta">
+                    {% if post.author %}
+                        <span>de <strong>{{ post.author }}</strong></span>
+                        <span class="dot">·</span>
+                    {% endif %}
+                    {% if post.district %}
+                        <span>{{ post.district.name }}</span>
+                        <span class="dot">·</span>
+                    {% endif %}
+                    {% if post.original_date %}
+                        <span>{{ post.original_date|date:"j M Y, H:i" }}</span>
+                    {% else %}
+                        <span title="data ingestiei">adăugat {{ post.scraped_at|date:"j M Y" }}</span>
+                    {% endif %}
+                    {% if post.url %}
+                        <span class="dot">·</span>
+                        <a href="{{ post.url }}" target="_blank" rel="noopener">sursă ↗</a>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">{{ post.body_excerpt }}</div>
+
+                {% if post.sentiment_label or post.location_name %}
+                <div class="card-footer">
+                    {% if post.sentiment_label %}
+                        <span>Sentiment: <strong>{{ post.sentiment_label }}</strong>
+                            {% if post.sentiment_score %}({{ post.sentiment_score|floatformat:2 }}){% endif %}
+                        </span>
+                    {% endif %}
+                    {% if post.location_name %}
+                        <span>📍 {{ post.location_name }}</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </article>
+        {% empty %}
+            <div class="empty">
+                Nicio postare nu corespunde filtrelor.
+                <p><a href="{% url 'ingestion:paste' %}">Adaugă prima postare →</a></p>
+            </div>
+        {% endfor %}
+    </main>
+</body>
+</html>
