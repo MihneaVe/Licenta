@@ -3,6 +3,11 @@ Django==4.2
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
 
+# Required by Profile.profile_picture (ImageField). Without Pillow,
+# Django's system check fails with fields.E210 and the container
+# can't start.
+Pillow==10.4.0
+
 # Data collection — Reddit API
 praw==7.7.1
 

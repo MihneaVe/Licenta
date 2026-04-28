@@ -9,10 +9,22 @@ export default function Heatmap() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // If the iframe hasn't loaded in 15s, show a configuration hint.
+  // Probe Django before relying on iframe onLoad — the iframe fires
+  // load events unpredictably in some browsers, and Django's first
+  // request on a cold container can take 10-20s. A direct fetch
+  // tells us deterministically whether the backend is reachable.
   useEffect(() => {
-    const t = setTimeout(() => setError(true), 15000);
-    return () => clearTimeout(t);
+    let cancelled = false;
+    fetch(`${DJANGO_URL}/feed/api/quarters.geojson`, { cache: 'no-store' })
+      .then((r) => {
+        if (cancelled) return;
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setError(true);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   return (
@@ -54,13 +66,25 @@ export default function Heatmap() {
             <p className="text-slate-400 text-sm font-medium">Loading Bucharest map…</p>
           </div>
         )}
-        {error && loading && (
+        {error && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900 gap-3 px-8 text-center">
             <span className="material-symbols-outlined text-4xl text-slate-500">map_off</span>
-            <p className="text-slate-400 text-sm font-medium">
+            <p className="text-slate-400 text-sm font-medium max-w-md">
               Map could not load from <code className="text-primary">{MAP_URL}</code>.
-              Make sure the Django backend (<code className="text-primary">civicpulse:web</code>) is running on port 8000.
             </p>
+            <ul className="text-slate-500 text-xs leading-relaxed list-disc list-inside max-w-md">
+              <li>Make sure Django is running on port 8000:&nbsp;
+                <code className="text-primary">docker compose up web</code> or
+                <code className="text-primary"> py manage.py runserver</code>.
+              </li>
+              <li>Apply the latest migrations:&nbsp;
+                <code className="text-primary">py manage.py migrate</code>.
+              </li>
+              <li>Verify directly:&nbsp;
+                <a href={MAP_URL} target="_blank" rel="noopener noreferrer"
+                   className="text-primary underline">{MAP_URL}</a>
+              </li>
+            </ul>
           </div>
         )}
         <iframe
