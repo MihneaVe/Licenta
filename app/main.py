@@ -3,9 +3,10 @@
 Run locally:
     uvicorn app.main:app --reload --port 8000
 
-Exposes the City Assistant RAG endpoints consumed by the React dashboard:
+Exposes the endpoints consumed by the React dashboard:
     POST /api/chat/           — streaming NDJSON RAG answer
     POST /api/rag/feedback/   — thumbs up/down
+    POST /api/ingest/         — manual paste ingestion (Add Post)
     GET  /healthz             — liveness probe
 """
 
@@ -15,7 +16,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import CORS_ORIGINS
-from .routers import chat, feedback
+from .routers import chat, feedback, ingest
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,6 +32,7 @@ app.add_middleware(
 
 app.include_router(chat.router, tags=["chat"])
 app.include_router(feedback.router, tags=["feedback"])
+app.include_router(ingest.router, tags=["ingest"])
 
 
 @app.get("/healthz")

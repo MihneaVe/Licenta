@@ -64,7 +64,7 @@ services:
     environment:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
-      VITE_DJANGO_URL: "${VITE_DJANGO_URL:-http://localhost:8000}"
+      VITE_API_URL: "${VITE_API_URL:-http://localhost:8000}"
     depends_on:
       - web
     restart: unless-stopped

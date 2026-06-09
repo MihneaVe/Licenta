@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
 import Markdown from '../components/Markdown';
 
-// FastAPI backend (the RAG pipeline). Env var name kept for continuity.
-const API_URL = import.meta.env.VITE_DJANGO_URL || 'http://localhost:8000';
+// FastAPI backend (the RAG pipeline).
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const SUGGESTIONS = [
   'What are residents most upset about right now?',

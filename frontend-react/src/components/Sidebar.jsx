@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
+import AddPostModal from './AddPostModal';
 
 export default function Sidebar() {
   const location = useLocation();
   const { isAuthenticated, user } = useAuth0();
+  const [showAddPost, setShowAddPost] = useState(false);
 
   // Helper function to determine if a link is active
   const isActive = (path) => location.pathname === path;
@@ -78,6 +81,14 @@ export default function Sidebar() {
             City Assistant
           </Link>
         </nav>
+        <button
+          onClick={() => setShowAddPost(true)}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors w-full text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
+        >
+          <span className="material-symbols-outlined text-[20px]">post_add</span>
+          Add Post
+        </button>
+        {showAddPost && <AddPostModal onClose={() => setShowAddPost(false)} />}
         <div className="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
           <Link 
             to="/dashboard/settings" 
