@@ -96,5 +96,8 @@ docker-compose.override.yml
 # are already covered by the global rules above; .vite/ is the only gap.
 .vite/
 
-# Generated synthetic datasets (apps.ingestion.synthetic → generate_synthetic)
+# Generated synthetic datasets (synthetic/ → scripts/generate_synthetic.py)
 /data/synthetic/
+
+# RAG evaluation run outputs (scripts/eval_rag.py)
+/eval/results/

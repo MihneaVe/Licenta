@@ -1,0 +1,29 @@
+{
+  "description": "Golden evaluation set for the CivicPulse RAG assistant. Each question carries expected labels (topics / sentiment / locations) used as a relevance proxy: a retrieved post counts as relevant when it matches every specified expectation. Topics refer to the post's primary topic; 'locations' must use exact analytics_district names.",
+  "questions": [
+    { "id": "q01", "question": "What are people complaining about regarding garbage collection?", "expect": { "topics": ["cleanliness"], "sentiment": "Negative" } },
+    { "id": "q02", "question": "Summarize the main transport complaints in the city.", "expect": { "topics": ["transport", "infrastructure"], "sentiment": "Negative" } },
+    { "id": "q03", "question": "What positive things are people saying about parks and green spaces?", "expect": { "topics": ["greenspace"], "sentiment": "Positive" } },
+    { "id": "q04", "question": "Are residents worried about safety at night?", "expect": { "topics": ["safety"] } },
+    { "id": "q05", "question": "What problems do people report about potholes and broken roads?", "expect": { "topics": ["infrastructure", "transport"], "sentiment": "Negative" } },
+    { "id": "q06", "question": "What is happening in Rahova?", "expect": { "locations": ["Rahova"] } },
+    { "id": "q07", "question": "What do residents of Obor say about their neighbourhood?", "expect": { "locations": ["Obor"] } },
+    { "id": "q08", "question": "Are there transport problems in Berceni?", "expect": { "topics": ["transport", "infrastructure"], "locations": ["Berceni"] } },
+    { "id": "q09", "question": "What are people in Drumul Taberei unhappy about?", "expect": { "sentiment": "Negative", "locations": ["Drumul Taberei"] } },
+    { "id": "q10", "question": "What good news comes from Floreasca?", "expect": { "sentiment": "Positive", "locations": ["Floreasca"] } },
+    { "id": "q11", "question": "How do people feel about cleanliness in Colentina?", "expect": { "topics": ["cleanliness"], "locations": ["Colentina"] } },
+    { "id": "q12", "question": "What are residents saying about the parks in Cismigiu?", "expect": { "topics": ["greenspace"], "locations": ["Cismigiu"] } },
+    { "id": "q13", "question": "Is Cotroceni a safe area according to residents?", "expect": { "topics": ["safety"], "locations": ["Cotroceni"] } },
+    { "id": "q14", "question": "What complaints do people have about public transport and buses?", "expect": { "topics": ["transport"], "sentiment": "Negative" } },
+    { "id": "q15", "question": "What do people love about their neighbourhoods?", "expect": { "sentiment": "Positive" } },
+    { "id": "q16", "question": "Which issues make residents most angry?", "expect": { "sentiment": "Negative" } },
+    { "id": "q17", "question": "What are people saying about illegal parking?", "expect": { "topics": ["transport", "infrastructure"] } },
+    { "id": "q18", "question": "Are there complaints about stray dogs or animals?", "expect": { "topics": ["safety", "other"], "sentiment": "Negative" } },
+    { "id": "q19", "question": "What do residents think about the metro?", "expect": { "topics": ["transport"] } },
+    { "id": "q20", "question": "What is being praised about playgrounds for children?", "expect": { "topics": ["greenspace", "other"], "sentiment": "Positive" } },
+    { "id": "q21", "question": "What problems are reported in Pajura?", "expect": { "sentiment": "Negative", "locations": ["Pajura"] } },
+    { "id": "q22", "question": "How is the situation in Tei?", "expect": { "locations": ["Tei"] } },
+    { "id": "q23", "question": "What are people saying about noise and construction work?", "expect": { "topics": ["infrastructure", "other"] } },
+    { "id": "q24", "question": "Are residents satisfied with street lighting?", "expect": { "topics": ["infrastructure", "safety"] } }
+  ]
+}
