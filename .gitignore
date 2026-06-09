@@ -82,6 +82,7 @@ yarn-error.log*
 # Editors and OS artifacts
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
@@ -91,17 +92,9 @@ Thumbs.db
 # Docker local override
 docker-compose.override.yml
 
-# React frontend (urban-sentiment) build + tooling artefacts
-Licenta/urban-sentiment/node_modules/
-Licenta/urban-sentiment/dist/
-Licenta/urban-sentiment/.vite/
-Licenta/urban-sentiment/.env
-Licenta/urban-sentiment/.env.local
-Licenta/urban-sentiment/.env.*.local
+# React (frontend-react) build cache — node_modules/, dist/, .env*
+# are already covered by the global rules above; .vite/ is the only gap.
+.vite/
 
-# Stitch / agent skill scratch directories — broken symlinks that shouldn't ship
-Licenta/.agent/
-Licenta/.agents/
-Licenta/.vscode/
-Licenta/secrets
-Licenta/skills-lock.json
+# Generated synthetic datasets (apps.ingestion.synthetic → generate_synthetic)
+/data/synthetic/

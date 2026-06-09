@@ -1,33 +1,38 @@
-# Django & DRF
-Django==4.2
-djangorestframework==3.14.0
-django-cors-headers==4.3.1
+# ---------------------------------------------------------------------------
+# CivicPulse backend — FastAPI + SQLAlchemy (replaced the former Django stack).
+# ---------------------------------------------------------------------------
 
-# Required by Profile.profile_picture (ImageField). Without Pillow,
-# Django's system check fails with fields.E210 and the container
-# can't start.
-Pillow==10.4.0
+# Web framework + ASGI server
+fastapi==0.136.3
+uvicorn[standard]==0.49.0
 
-# Data collection — Reddit API
-praw==7.7.1
+# ORM + migrations + pgvector type
+SQLAlchemy==2.0.50
+alembic==1.18.4
+pgvector==0.3.6
+psycopg2-binary==2.9.6        # Postgres driver (Supabase)
 
-# Data collection — Web scraping
-playwright==1.41.0
-beautifulsoup4==4.12.2
+# HTTP client (Ollama + Supabase REST)
 requests==2.31.0
 
-# NLP — HuggingFace Transformers (local models)
+# RAG reranker — local cross-encoder BAAI/bge-reranker-v2-m3 (XLM-RoBERTa)
+# loaded via raw transformers + torch. Embeddings + generation + grading +
+# query-rewrite + HyDE all run on Ollama (qwen2.5:14b / nomic-embed-text) over HTTP.
 transformers==4.37.0
 torch==2.1.2
 sentencepiece==0.1.99
 
-# NLP — spaCy for NER
+# NLP batch tooling (interpreters/: sentiment, topic, NER) — used by the
+# offline reprocessing scripts, not the web app.
 spacy==3.7.2
-
-# NLP — Language detection
 langdetect==1.0.9
 
-# Geo — OpenStreetMap, geocoding, spatial
+# Data collection (scrapers/: Reddit API + web scraping) — offline tooling.
+praw==7.7.1
+playwright==1.41.0
+beautifulsoup4==4.12.2
+
+# Geo (geo/: OpenStreetMap, geocoding, spatial)
 osmnx==1.9.1
 geopy==2.4.1
 shapely==2.0.2
@@ -35,16 +40,6 @@ shapely==2.0.2
 # Data processing
 pandas==2.1.4
 numpy==1.26.3
-
-# Database — Supabase (PostgreSQL)
-psycopg2-binary==2.9.6
-
-# Server
-gunicorn==20.1.0
-
-# Task queue
-redis==5.0.1
-celery==5.3.6
 
 # Utilities
 python-dotenv==1.0.0

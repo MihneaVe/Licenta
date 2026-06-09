@@ -67,16 +67,15 @@ social_mood_meter/
 │   │   ├── analytics/            feed.html, map.html (Leaflet quarters)
 │   │   └── ingestion/paste.html  Manual paste UI
 │   └── static/                   CSS, JS
-├── Licenta/
-│   ├── urban-sentiment/          React 19 + Vite + Tailwind dashboard
-│   │   ├── src/
-│   │   │   ├── App.jsx           Router + Auth0 wrapper
-│   │   │   ├── components/       Sidebar, Layout
-│   │   │   └── pages/            Overview, Heatmap, Topics, LiveFeed,
-│   │   │                          Settings, EditProfile, LandingPage
-│   │   ├── supabase/             RLS scripts + legacy schema
-│   │   └── Dockerfile
-│   └── desktop_*.html            Original Tailwind / "City Pulse" mockups
+├── frontend-react/              React 19 + Vite + Tailwind dashboard
+│   ├── src/
+│   │   ├── App.jsx              Router + Auth0 wrapper
+│   │   ├── components/          Sidebar, Layout
+│   │   └── pages/               Overview, Heatmap, Topics, LiveFeed,
+│   │                            Settings, EditProfile, LandingPage
+│   ├── supabase/               RLS scripts + legacy schema
+│   └── Dockerfile
+├── designs/                     Original Tailwind / "City Pulse" HTML mockups
 ├── geo/                          Overpass + geocoder helpers
 ├── interpreters/                 HuggingFace sentiment + topic + NER
 ├── scrapers/                     Reddit/Google Maps/Facebook scrapers
@@ -117,7 +116,7 @@ The `web` service:
 The `frontend` service:
 
 - Listens on **`localhost:5173`** with Vite hot-reload.
-- Reads `Licenta/urban-sentiment/.env` for Auth0 + Supabase keys.
+- Reads `frontend-react/.env` for Auth0 + Supabase keys.
 - Iframes Django's `/feed/map/` for the City Heatmap page (controlled
   by `VITE_DJANGO_URL`).
 - Provides an **Add Post** button in the sidebar that opens Django's
@@ -158,7 +157,7 @@ py manage.py seed_bucharest_quarters
 py manage.py runserver           # → http://127.0.0.1:8000/feed/
 
 # Frontend (separate terminal) -------------
-cd ..\Licenta\urban-sentiment
+cd ..\frontend-react
 npm install
 npm run dev                      # → http://localhost:5173/
 ```
@@ -203,6 +202,12 @@ py manage.py seed_bucharest_quarters --skip-osm
 
 # 4. Run the NLP pipeline (sentiment + topics + geo) on unprocessed rows
 py manage.py run_pipeline --process-only
+
+# 5. Generate synthetic civic posts with a local LLM (agentic loop)
+#    Labels by topic + sentiment; --to-db feeds the same pipeline as real data.
+#    See backend/apps/ingestion/synthetic/README.md for the full guide.
+py manage.py generate_synthetic --count 40
+py manage.py generate_synthetic --count 100 --balance realistic --to-db
 ```
 
 ## URLs

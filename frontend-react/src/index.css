@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #137fec;
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #101922;
+
+  --font-display: "Public Sans", sans-serif;
+
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  html, body {
+    @apply bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-slate-100;
+    min-height: max(884px, 100dvh);
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+  .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Motion: page transitions, entrance animations, tactile button presses.
+   Everything here is disabled under prefers-reduced-motion (bottom of file).
+   The page transition is opacity-only on purpose — a lingering transform
+   on the routed wrapper would re-anchor position:fixed children (e.g. the
+   assistant's "See posts" modal, which we also render through a portal).
+   ------------------------------------------------------------------ */
+@keyframes page-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-in    { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  .animate-page-enter { animation: page-enter 0.3s ease-out both; }
+  .animate-fade-in    { animation: fade-in 0.2s ease-out both; }
+  .animate-scale-in   { animation: scale-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .animate-slide-up   { animation: slide-up 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+}
+
+@layer base {
+  /* Smooth, tactile feedback on every button-like control. Color/hover
+     transitions are unified here; the active scale gives a subtle "press". */
+  button, [role="button"], summary {
+    transition: transform 0.12s ease, color 0.18s ease, background-color 0.18s ease,
+                border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  }
+  button:not(:disabled):active,
+  [role="button"]:active,
+  summary:active {
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Leaflet theming. Layout bits stay global; the dark palette is scoped
+   under `.dark` so the map follows the dashboard's light/dark toggle.
+   In light mode Leaflet's own (light) chrome shows through.
+   ------------------------------------------------------------------ */
+.leaflet-container {
+  font-family: "Public Sans", sans-serif;
+}
+.leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.leaflet-tooltip {
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* --- dark mode only --- */
+.dark .leaflet-container { background: #101922; }
+
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+  background: #1e293b;
+  color: #e2e8f0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+.dark .leaflet-popup-content-wrapper {
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+}
+.dark .leaflet-container a.leaflet-popup-close-button { color: #94a3b8; }
+.dark .leaflet-container a.leaflet-popup-close-button:hover { color: #e2e8f0; }
+
+.dark .leaflet-bar a,
+.dark .leaflet-bar a:hover {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+.dark .leaflet-control-layers {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+}
+.dark .leaflet-control-layers-toggle { background-color: #1e293b; }
+
+.dark .leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: #94a3b8 !important;
+}
+.dark .leaflet-control-attribution a { color: #60a5fa !important; }
+
+.dark .leaflet-tooltip {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+.dark .leaflet-tooltip-top::before { border-top-color: #334155; }
+.dark .leaflet-tooltip-bottom::before { border-bottom-color: #334155; }
+.dark .leaflet-tooltip-left::before { border-left-color: #334155; }
+.dark .leaflet-tooltip-right::before { border-right-color: #334155; }

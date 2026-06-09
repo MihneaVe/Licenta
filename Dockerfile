@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.6
 
 # ----------------------------------------------------------------------
-# CivicPulse / social_mood_meter — Django backend image
+# CivicPulse — FastAPI backend image
 #
 # Build:
 #   docker build -t civicpulse:latest .
@@ -9,9 +9,9 @@
 # Run (dev):
 #   docker compose up web
 #
-# The container only runs the Django app. Heavy ML extras (Playwright
-# + chromium for the scrapers, full spaCy model downloads) are guarded
-# behind build args so the dev image stays small (~700MB instead of 4GB).
+# The container runs the FastAPI app (app.main:app) with uvicorn. Heavy ML
+# extras (Playwright + chromium for the scrapers, full spaCy model downloads)
+# are guarded behind build args so the dev image stays small.
 # ----------------------------------------------------------------------
 
 FROM python:3.11-slim AS base
@@ -54,12 +54,9 @@ RUN if [ "$INSTALL_SPACY_MODEL" = "1" ]; then \
 # Project source.
 COPY . .
 
-# manage.py adds both /app and /app/backend to sys.path, so running
-# from /app keeps `from api.endpoints …` and `from apps.* …` resolving.
-WORKDIR /app/backend
-
 EXPOSE 8000
 
-# Default command — runs migrations then serves with gunicorn.
-# docker-compose can override this for the `worker` profile.
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --access-logfile - --error-logfile -"]
+# Default command — apply Alembic migrations, then serve the FastAPI app.
+# (On the live Supabase DB the baseline is already stamped, so `upgrade head`
+# is a no-op; on a fresh DB it builds the schema.)
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
