@@ -21,10 +21,11 @@ requests==2.31.0
 transformers==4.37.0
 torch==2.1.2
 sentencepiece==0.1.99
+protobuf>=5                   # XLM-R slow tokenizer (sentiment model) needs it
 
 # NLP batch tooling (interpreters/: sentiment, topic, NER) — used by the
 # offline reprocessing scripts, not the web app.
-spacy==3.7.2
+spacy>=3.7.2,<4
 langdetect==1.0.9
 
 # Data collection (scrapers/: Reddit API + web scraping) — offline tooling.

@@ -18,24 +18,33 @@ class NERExtractor:
             model_name: spaCy model name. Default is Romanian small model.
                         Falls back to multilingual if Romanian model unavailable.
         """
-        import spacy
-
         try:
-            self.nlp = spacy.load(model_name)
-            logger.info(f"Loaded spaCy model: {model_name}")
-        except OSError:
+            import spacy
+        except ImportError:
             logger.warning(
-                f"spaCy model '{model_name}' not found. "
-                "Falling back to 'xx_ent_wiki_sm' (multilingual)."
+                "spaCy is not installed — location extraction will use the "
+                "pattern-based fallback only (pip install spacy)."
             )
+            self.nlp = None
+            spacy = None
+
+        if spacy is not None:
             try:
-                self.nlp = spacy.load("xx_ent_wiki_sm")
+                self.nlp = spacy.load(model_name)
+                logger.info(f"Loaded spaCy model: {model_name}")
             except OSError:
                 logger.warning(
-                    "No spaCy model found. Using blank Romanian model. "
-                    "Install with: python -m spacy download ro_core_news_sm"
+                    f"spaCy model '{model_name}' not found. "
+                    "Falling back to 'xx_ent_wiki_sm' (multilingual)."
                 )
-                self.nlp = spacy.blank("ro")
+                try:
+                    self.nlp = spacy.load("xx_ent_wiki_sm")
+                except OSError:
+                    logger.warning(
+                        "No spaCy model found. Using blank Romanian model. "
+                        "Install with: python -m spacy download ro_core_news_sm"
+                    )
+                    self.nlp = spacy.blank("ro")
 
         # Common Bucharest location keywords for pattern-based fallback
         self._location_patterns = [
@@ -65,9 +74,9 @@ class NERExtractor:
         locations = []
         seen_texts = set()
 
-        # spaCy NER extraction
-        doc = self.nlp(text)
-        for ent in doc.ents:
+        # spaCy NER extraction (skipped when spaCy is unavailable)
+        doc = self.nlp(text) if self.nlp is not None else None
+        for ent in (doc.ents if doc is not None else ()):
             if ent.label_ in ("LOC", "GPE", "FAC", "ORG"):
                 normalized = ent.text.strip()
                 if normalized.lower() not in seen_texts:
