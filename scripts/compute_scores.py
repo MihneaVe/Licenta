@@ -46,7 +46,7 @@ def run(days: int = 30) -> int:
 
     written = 0
     with SessionLocal() as s:
-        # Effective post date = original_date when known, else scraped_at —
+        # Effective post date = original_date when known, else scraped_at -
         # the same definition the feedbacks view and the RAG filters use.
         eff_date = func.coalesce(SocialPost.original_date, SocialPost.scraped_at)
         in_window = (
@@ -119,7 +119,7 @@ def run(days: int = 30) -> int:
             row.computed_at = datetime.now(timezone.utc)
             s.add(row)
             written += 1
-            print(f"  {names.get(district_id, district_id)}: {overall}/10 ({row.grade}) — {post_count} posts")
+            print(f"  {names.get(district_id, district_id)}: {overall}/10 ({row.grade}) - {post_count} posts")
 
         s.commit()
 

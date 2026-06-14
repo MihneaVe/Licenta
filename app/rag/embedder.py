@@ -1,8 +1,8 @@
 """Embedding service via Ollama (nomic-embed-text, fully local, 768-dim).
 
 nomic-embed-text supports task-type prefixes that improve retrieval quality:
-  "search_document: <text>"  — corpus chunks stored in the index
-  "search_query:    <text>"  — the user query at search time
+  "search_document: <text>"  - corpus chunks stored in the index
+  "search_query:    <text>"  - the user query at search time
 """
 
 import logging

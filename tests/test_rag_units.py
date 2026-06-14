@@ -1,4 +1,4 @@
-"""Unit tests for pure RAG pipeline helpers — no DB, no Ollama.
+"""Unit tests for pure RAG pipeline helpers - no DB, no Ollama.
 
 detect_location_intent's district list is monkeypatched; everything else
 under test is a pure function.
@@ -30,7 +30,7 @@ def test_mixed_cues_yield_no_intent():
 # --- location intent ---------------------------------------------------------
 
 def _fake_locations():
-    # (lowercase, canonical), longest-first — the contract of known_locations().
+    # (lowercase, canonical), longest-first - the contract of known_locations().
     return [
         ("calea victoriei", "Calea Victoriei"),
         ("tei toboc", "Tei Toboc"),

@@ -4,9 +4,9 @@ Chains the three batch steps so freshly-ingested posts (scripts.ingest, the
 /api/ingest/ endpoint, or scripts.insert_synthetic) become fully usable by the
 dashboard and the RAG assistant in one command:
 
-1. scripts.process_posts — sentiment, topics, language, district assignment
-2. scripts.embed_posts   — nomic-embed-text embeddings into rag_postembedding
-3. scripts.compute_scores — per-district scores into analytics_districtscore
+1. scripts.process_posts - sentiment, topics, language, district assignment
+2. scripts.embed_posts   - nomic-embed-text embeddings into rag_postembedding
+3. scripts.compute_scores - per-district scores into analytics_districtscore
 
 Usage (from the project root):
     python -m scripts.pipeline                # process new posts end-to-end
@@ -36,7 +36,7 @@ def main():
     process_posts.run(force=args.force, limit=args.limit, device=args.device)
 
     if args.skip_embed:
-        print("\n=== Step 2/3: embeddings — skipped ===")
+        print("\n=== Step 2/3: embeddings - skipped ===")
     else:
         print("\n=== Step 2/3: embeddings ===")
         # embed_posts owns its own argparse main(); run it as a subprocess so
@@ -48,11 +48,11 @@ def main():
             cmd += ["--limit", str(args.limit)]
         result = subprocess.run(cmd)
         if result.returncode != 0:
-            print("Embedding step failed — fix Ollama and re-run "
+            print("Embedding step failed - fix Ollama and re-run "
                   "`python -m scripts.embed_posts`. Continuing to scoring.")
 
     if args.skip_scores:
-        print("\n=== Step 3/3: district scores — skipped ===")
+        print("\n=== Step 3/3: district scores - skipped ===")
     else:
         print("\n=== Step 3/3: district scores ===")
         compute_scores.run(days=args.days)

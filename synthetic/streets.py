@@ -22,14 +22,14 @@ _OVERPASS_ENDPOINTS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
 ]
-_UA = {"User-Agent": "civicpulse-thesis/1.0 (synthetic demo street grounding)"}
+_UA = {"User-Agent": "urbanpulse-thesis/1.0 (synthetic demo street grounding)"}
 
 # OSM highway classes that read as major arteries (boulevards / calea / șosea).
 _MAJOR_HIGHWAY = {"motorway", "trunk", "primary", "secondary"}
 # Romanian street-type prefixes that denote a big road by name.
 _MAJOR_NAME_RE = re.compile(r"^(Bulevardul|Bulevard|Calea|Șoseaua|Soseaua|Splaiul)\b", re.IGNORECASE)
 
-# Street-type prefixes we verify (streets — not squares/parks/landmarks, which
+# Street-type prefixes we verify (streets - not squares/parks/landmarks, which
 # may legitimately be named even if they're not in the street list).
 _STREET_RE = re.compile(
     r"\b(?:Strada|Str\.?|Bulevardul|Bulevard|Bd\.?|B-dul|Calea|Șoseaua|Soseaua|"

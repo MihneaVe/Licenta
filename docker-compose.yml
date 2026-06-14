@@ -1,10 +1,10 @@
 # ----------------------------------------------------------------------
-# CivicPulse — local orchestration (FastAPI backend + React dashboard)
+# UrbanPulse - local orchestration (FastAPI backend + React dashboard)
 #
 # Default `docker compose up` brings up:
-#   web      — FastAPI (uvicorn) on http://localhost:8000
+#   web      - FastAPI (uvicorn) on http://localhost:8000
 #                /api/chat/ (streaming RAG), /api/rag/feedback/, /healthz
-#   frontend — React 19 + Vite on http://localhost:5173 (UrbanPulse dashboard)
+#   frontend - React 19 + Vite on http://localhost:5173 (UrbanPulse dashboard)
 #
 # Both tiers share Supabase as their single source of truth:
 #   * FastAPI talks to Supabase Postgres via SQLAlchemy (DB_* in .env) and to
@@ -22,7 +22,7 @@ services:
       args:
         INSTALL_PLAYWRIGHT: "0"
         INSTALL_SPACY_MODEL: "0"
-    image: civicpulse:web
+    image: urbanpulse:web
     ports:
       - "8000:8000"
     env_file:
@@ -54,8 +54,8 @@ services:
     build:
       context: ./frontend-react
       dockerfile: Dockerfile
-    image: civicpulse:frontend
-    container_name: civicpulse-frontend
+    image: urbanpulse:frontend
+    container_name: urbanpulse-frontend
     ports:
       - "5173:5173"
     volumes:
@@ -72,13 +72,13 @@ services:
   postgres:
     # Local Postgres alternative to Supabase. Enable with:
     #   docker compose --profile localdb up postgres web
-    # Set DB_HOST=postgres / DB_USER=civicpulse / DB_PASSWORD=civicpulse in .env,
+    # Set DB_HOST=postgres / DB_USER=urbanpulse / DB_PASSWORD=urbanpulse in .env,
     # then `alembic upgrade head` builds the schema from the baseline migration.
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_DB: civicpulse
-      POSTGRES_USER: civicpulse
-      POSTGRES_PASSWORD: civicpulse
+      POSTGRES_DB: urbanpulse
+      POSTGRES_USER: urbanpulse
+      POSTGRES_PASSWORD: urbanpulse
     ports:
       - "5432:5432"
     volumes:

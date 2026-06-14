@@ -1,4 +1,4 @@
-"""Unit tests for scripts.process_posts.DistrictResolver — fake session, no DB."""
+"""Unit tests for scripts.process_posts.DistrictResolver - fake session, no DB."""
 
 from types import SimpleNamespace
 

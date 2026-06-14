@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import { authHeader } from '../lib/auth';
 
 // FastAPI backend (same origin the Assistant uses).
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -9,10 +11,11 @@ const SOURCES = [
   { value: 'x', label: 'X (Twitter)', icon: 'tag' },
 ];
 
-// Manual paste ingestion — replaces the old Django /ingest/ form. Paste a
+// Manual paste ingestion - replaces the old Django /ingest/ form. Paste a
 // Reddit or X post; the backend parses, cleans, and stores it, then runs
 // NLP + embedding in the background so it shows up on the dashboard.
 export default function AddPostModal({ onClose }) {
+  const { getAccessTokenSilently } = useAuth0();
   const [source, setSource] = useState('reddit');
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -27,7 +30,7 @@ export default function AddPostModal({ onClose }) {
     try {
       const res = await fetch(`${API_URL}/api/ingest/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await authHeader(getAccessTokenSilently)) },
         body: JSON.stringify({ source, text }),
       });
       const data = await res.json().catch(() => ({}));
@@ -38,7 +41,7 @@ export default function AddPostModal({ onClose }) {
         setText('');
       }
     } catch {
-      setError('Could not reach the CivicPulse API. Is the backend running?');
+      setError('Could not reach the UrbanPulse API. Is the backend running?');
     } finally {
       setSubmitting(false);
     }
@@ -86,7 +89,7 @@ export default function AddPostModal({ onClose }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={8}
-            placeholder={`Paste the full ${source === 'reddit' ? 'Reddit post' : 'tweet'} here — title, author, and body included. The backend cleans it up automatically.`}
+            placeholder={`Paste the full ${source === 'reddit' ? 'Reddit post' : 'tweet'} here - title, author, and body included. The backend cleans it up automatically.`}
             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 px-3.5 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none"
           />
 
@@ -98,7 +101,7 @@ export default function AddPostModal({ onClose }) {
           {result && (
             <div className="text-sm rounded-xl px-3.5 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               {result.created
-                ? `Post #${result.id} added — sentiment, topic, and district are being computed in the background.`
+                ? `Post #${result.id} added - sentiment, topic, and district are being computed in the background.`
                 : `This post is already in the database (#${result.id}).`}
             </div>
           )}

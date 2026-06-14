@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 
 export default function Overview() {
   const { districts = [], fromDate, toDate, fromISO, toISO } = useOutletContext() || {};
-  const [stats, setStats] = useState({ total: 0, avgScore: 0, topTopic: '—', alertCount: 0 });
+  const [stats, setStats] = useState({ total: 0, avgScore: 0, topTopic: '-', alertCount: 0 });
   const [recentFeedbacks, setRecentFeedbacks] = useState([]);
   const [topicCounts, setTopicCounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ export default function Overview() {
       setStats({
         total,
         avgScore: ov.avg_score || 0,
-        topTopic: topics[0]?.name || '—',
+        topTopic: topics[0]?.name || '-',
         alertCount: ov.alert_count || 0,
       });
       setTopicCounts(
@@ -59,7 +59,7 @@ export default function Overview() {
         }))
       );
     } else {
-      setStats({ total: 0, avgScore: 0, topTopic: '—', alertCount: 0 });
+      setStats({ total: 0, avgScore: 0, topTopic: '-', alertCount: 0 });
       setTopicCounts([]);
     }
     setRecentFeedbacks(recent || []);
@@ -94,7 +94,7 @@ export default function Overview() {
   return (
     <div className="flex flex-col gap-6 lg:gap-8">
 
-      {/* Active-filter summary — confirms the header filters are applied here */}
+      {/* Active-filter summary - confirms the header filters are applied here */}
       {filterSummary && (
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 -mb-2">
           <span className="material-symbols-outlined text-[16px] text-primary">filter_alt</span>

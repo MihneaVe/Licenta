@@ -1,4 +1,4 @@
-"""views + security — dashboard SQL views and RLS hardening
+"""views + security - dashboard SQL views and RLS hardening
 
 Captures the four read-only views the React dashboard consumes (previously
 hand-applied on Supabase, so a fresh database built from migrations was
@@ -10,7 +10,7 @@ unusable by the frontend) and closes two security gaps:
 * quarters_map         per-quarter sentiment + boundary geometry (Heatmap)
 
 Security: rag_feedback / rag_postembedding (and alembic_version) had row level
-security disabled while Supabase's default grants give the anon role full DML —
+security disabled while Supabase's default grants give the anon role full DML -
 any holder of the publishable anon key could read or wipe them through
 PostgREST. RLS is now enabled with no policies (deny-all): the backend talks to
 Postgres as the table owner, which bypasses RLS, and the dashboard only reads

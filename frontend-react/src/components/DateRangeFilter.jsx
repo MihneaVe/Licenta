@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 
 // Calendar-style date filter. The user can set a "from" date, a "to" date, or
-// both — anything left blank is unbounded on that side. Values are plain
+// both - anything left blank is unbounded on that side. Values are plain
 // 'YYYY-MM-DD' strings (or null). Quick presets fill both ends in one click.
 const fmt = (ymd) => {
   if (!ymd) return null;
@@ -50,7 +50,7 @@ export default function DateRangeFilter({ fromDate, toDate, onChange, min, max, 
   };
 
   let label = 'Any date';
-  if (fromDate && toDate) label = `${fmt(fromDate)} – ${fmt(toDate)}`;
+  if (fromDate && toDate) label = `${fmt(fromDate)} - ${fmt(toDate)}`;
   else if (fromDate) label = `From ${fmt(fromDate)}`;
   else if (toDate) label = `Until ${fmt(toDate)}`;
 

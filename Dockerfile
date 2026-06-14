@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1.6
 
 # ----------------------------------------------------------------------
-# CivicPulse — FastAPI backend image
+# UrbanPulse - FastAPI backend image
 #
 # Build:
-#   docker build -t civicpulse:latest .
+#   docker build -t urbanpulse:latest .
 #
 # Run (dev):
 #   docker compose up web
@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Python deps — copied first so the layer caches across code edits.
+# Python deps - copied first so the layer caches across code edits.
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
@@ -56,7 +56,7 @@ COPY . .
 
 EXPOSE 8000
 
-# Default command — apply Alembic migrations, then serve the FastAPI app.
+# Default command - apply Alembic migrations, then serve the FastAPI app.
 # (On the live Supabase DB the baseline is already stamped, so `upgrade head`
 # is a no-op; on a fresh DB it builds the schema.)
 CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]

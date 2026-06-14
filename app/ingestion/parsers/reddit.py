@@ -2,12 +2,12 @@
 
 Handles three input shapes, in order:
 
-1. **JSON** — output of ``https://reddit.com/r/<sub>/comments/<id>.json``
+1. **JSON** - output of ``https://reddit.com/r/<sub>/comments/<id>.json``
    or a PRAW ``submission.__dict__`` dump.
-2. **Web copy-paste** — the layout you get when selecting a post on
+2. **Web copy-paste** - the layout you get when selecting a post on
    ``reddit.com``: header lines (``r/foo``, ``Posted by u/bar • 5h``),
    then the title, then the body, then vote/comment counts.
-3. **Plain text** — anything else; treated entirely as the post body.
+3. **Plain text** - anything else; treated entirely as the post body.
 """
 
 from __future__ import annotations
@@ -155,7 +155,7 @@ def _parse_web_paste(text: str) -> ParsedPost:
             body_lines.append(stripped)
 
     if title_idx is None:
-        # No title detected — whole input is the body.
+        # No title detected - whole input is the body.
         return ParsedPost(
             source="reddit",
             content_raw=text.strip(),

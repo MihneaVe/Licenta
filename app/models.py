@@ -1,7 +1,7 @@
 """SQLAlchemy models mirroring the existing Supabase schema.
 
 These map onto the tables the former Django backend created (same table and
-column names), so no data migration is needed — Alembic is baselined to this
+column names), so no data migration is needed - Alembic is baselined to this
 schema. Only the tables the FastAPI app actually uses are modelled here:
 
     analytics_socialpost           (+ topics M2M, district FK)

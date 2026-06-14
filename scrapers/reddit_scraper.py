@@ -14,7 +14,7 @@ class RedditScraper:
         "Cluj",
     ]
 
-    def __init__(self, client_id, client_secret, user_agent="civicpulse-thesis/1.0"):
+    def __init__(self, client_id, client_secret, user_agent="urbanpulse-thesis/1.0"):
         self.reddit = praw.Reddit(
             client_id=client_id,
             client_secret=client_secret,
@@ -29,7 +29,7 @@ class RedditScraper:
             subreddit_name: Name of the subreddit (without r/).
             sort: One of 'hot', 'new', 'top', 'rising'.
             limit: Maximum number of posts to fetch.
-            time_filter: For 'top' sort — 'hour', 'day', 'week', 'month', 'year', 'all'.
+            time_filter: For 'top' sort - 'hour', 'day', 'week', 'month', 'year', 'all'.
         """
         subreddit = self.reddit.subreddit(subreddit_name)
 
@@ -86,7 +86,7 @@ class RedditScraper:
 
         Args:
             query: Search query string.
-            subreddit_name: Optional — limit search to a specific subreddit.
+            subreddit_name: Optional - limit search to a specific subreddit.
             sort: 'relevance', 'hot', 'top', 'new', 'comments'.
             limit: Maximum results.
         """

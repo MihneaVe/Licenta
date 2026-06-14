@@ -18,8 +18,8 @@ db.sqlite3
 db.sqlite3-journal
 backend/db.sqlite3
 backend/db.sqlite3-journal
-civicpulse_dev.sqlite3
-civicpulse_dev.sqlite3-journal
+urbanpulse_dev.sqlite3
+urbanpulse_dev.sqlite3-journal
 media/
 staticfiles/
 backend/staticfiles/
@@ -51,7 +51,7 @@ dist/
 .coverage
 htmlcov/
 
-# React app — built into its own image (compose `frontend` service,
+# React app - built into its own image (compose `frontend` service,
 # context: ./frontend-react). The Django image needs none of it, so keep
 # the whole subtree out of this (root) build context.
 frontend-react/

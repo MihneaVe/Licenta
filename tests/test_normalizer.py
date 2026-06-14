@@ -1,4 +1,4 @@
-"""Unit tests for app.ingestion.normalizer — pure text cleaning, no DB."""
+"""Unit tests for app.ingestion.normalizer - pure text cleaning, no DB."""
 
 from app.ingestion.normalizer import normalize
 

@@ -16,7 +16,7 @@ export default function Topics() {
     setLoading(true);
 
     // Per-topic aggregates come from a server-side view (true counts/averages
-    // over ALL posts — not PostgREST's 1000-row response cap). A small recent
+    // over ALL posts - not PostgREST's 1000-row response cap). A small recent
     // sample feeds the deep-dive's example posts.
     const [{ data: agg }, { data: sample }] = await Promise.all([
       supabase.from('feedbacks_topics').select('*'),
@@ -155,7 +155,7 @@ export default function Topics() {
           <div className="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex justify-between items-start mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {selectedTopic ? `${selectedTopic.name} — Deep Dive` : 'Topic Deep Dive'}
+                {selectedTopic ? `${selectedTopic.name} - Deep Dive` : 'Topic Deep Dive'}
               </h3>
             </div>
             
@@ -200,12 +200,12 @@ export default function Topics() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
               <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Most Positive</p>
-              <p className="font-bold text-emerald-600">{loading ? '…' : (mostPositive?.name || '—')}</p>
+              <p className="font-bold text-emerald-600">{loading ? '…' : (mostPositive?.name || '-')}</p>
               {mostPositive && <p className="text-xs text-slate-400 mt-1">Avg score: {mostPositive.avgScore}</p>}
             </div>
             <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
               <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Most Negative</p>
-              <p className="font-bold text-rose-600">{loading ? '…' : (mostNegative?.name || '—')}</p>
+              <p className="font-bold text-rose-600">{loading ? '…' : (mostNegative?.name || '-')}</p>
               {mostNegative && <p className="text-xs text-slate-400 mt-1">Avg score: {mostNegative.avgScore}</p>}
             </div>
           </div>

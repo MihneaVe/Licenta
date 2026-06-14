@@ -16,6 +16,9 @@ const Auth0ProviderWithNavigate = ({ children }) => {
 
   const domain = import.meta.env.VITE_AUTH0_DOMAIN || '';
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID || '';
+  // When set, requests a JWT access token for our API so the backend can
+  // verify it. Omitted when unset so login still works without a protected API.
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE || undefined;
 
   const onRedirectCallback = (appState) => {
     navigate(appState?.returnTo || '/dashboard', { replace: true });
@@ -26,7 +29,8 @@ const Auth0ProviderWithNavigate = ({ children }) => {
       domain={domain}
       clientId={clientId}
       authorizationParams={{
-        redirect_uri: window.location.origin
+        redirect_uri: window.location.origin,
+        ...(audience ? { audience } : {}),
       }}
       onRedirectCallback={onRedirectCallback}
     >

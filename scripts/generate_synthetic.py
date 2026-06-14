@@ -2,8 +2,8 @@
 
 Generates platform-authentic Bucharest posts via the agentic
 draft -> critique -> revise loop (Ollama), spreads them across the city's
-*actual* Supabase quarters — **filling the emptiest cartiere first** so the
-heatmap fills in — writes one JSONL record per post, and (when a Supabase
+*actual* Supabase quarters - **filling the emptiest cartiere first** so the
+heatmap fills in - writes one JSONL record per post, and (when a Supabase
 service key is available) inserts the accepted ("good") posts into the DB as
 it goes, with a live progress bar.
 
@@ -70,8 +70,8 @@ ap.add_argument("--street-fixes", type=int, default=2,
                      "before the deterministic replacement kicks in.")
 ap.add_argument("--mixed", action="store_true",
                 help="Scene mode: give every quarter a realistic mix of ALL three "
-                     "sentiments with a per-quarter LEAN — ~--pos-quarters positive, "
-                     "~--neg-quarters negative, the rest neutral — topping each "
+                     "sentiments with a per-quarter LEAN - ~--pos-quarters positive, "
+                     "~--neg-quarters negative, the rest neutral - topping each "
                      "quarter up to --per-quarter TOTAL posts (and guaranteeing at "
                      "least one positive/negative/neutral post per quarter). "
                      "Ignores --count / --even and the other bias modes.")
@@ -198,7 +198,7 @@ class DBSink:
 rng = random.Random(42)
 quarters = fetch_quarters(READ_KEY)
 if not quarters:
-    sys.exit("quarters_map returned no rows — is the view present and seeded?")
+    sys.exit("quarters_map returned no rows - is the view present and seeded?")
 dmap = {q["name"]: q["id"] for q in quarters}
 empty_before = sum(1 for q in quarters if not (q.get("post_count") or 0))
 
@@ -243,13 +243,13 @@ def build_positive_plan(quarters, n, rng, target=0.40, lo=25, hi=200):
 
 def build_neutral_plan(quarters, n, rng, target_abs=0.15, lo=25, hi=200):
     """Pick up to `n` currently-non-neutral quarters (avg sentiment outside the
-    amber band, |avg| >= 0.3 — i.e. clearly green or red) and size enough
+    amber band, |avg| >= 0.3 - i.e. clearly green or red) and size enough
     neutral (0.0) posts to dilute each one's average toward ~0 (amber).
     Returns (plan, picks).
 
     Neutral posts only *dilute* the mean toward zero, so strongly-skewed or
     large quarters may not fully reach neutral once the per-quarter cap (`hi`)
-    kicks in — they still move clearly toward amber, mirroring the positive
+    kicks in - they still move clearly toward amber, mirroring the positive
     plan's behaviour."""
     cands = [q for q in quarters
              if (q.get("post_count") or 0) > 0
@@ -272,7 +272,7 @@ def build_neutral_plan(quarters, n, rng, target_abs=0.15, lo=25, hi=200):
 
 # Per-quarter sentiment mix by lean. Scores are +0.85/-0.85/0.0, so these weights
 # put a positive-lean quarter's average around +0.36 (green), negative around
-# -0.36 (red), and neutral around 0 (amber) — while every quarter keeps all three.
+# -0.36 (red), and neutral around 0 (amber) - while every quarter keeps all three.
 _MIX_LEAN = {
     "positive": {"positive": 0.60, "negative": 0.18, "neutral": 0.22},
     "negative": {"negative": 0.60, "positive": 0.18, "neutral": 0.22},
@@ -410,7 +410,7 @@ if not args.no_streets:
             done += 1
             if done % 5 == 0 or done == len(todo):
                 have = sum(1 for v in streets_map.values() if v)
-                sys.stdout.write(f"\r   fetched {done}/{len(todo)} — {have}/{len(plan_quarters)} "
+                sys.stdout.write(f"\r   fetched {done}/{len(todo)} - {have}/{len(plan_quarters)} "
                                  f"quarters have streets   ")
                 sys.stdout.flush()
             if done % 15 == 0:                 # persist so Ctrl+C mid-prefetch keeps progress
@@ -445,13 +445,13 @@ engine = SyntheticEngine(client, args.model, max_revisions=args.max_revisions,
 sink = None
 if not args.no_insert:
     if not SERVICE:
-        print("⚠  No service_role key (set SUPABASE_SERVICE_KEY in .env) — "
+        print("⚠  No service_role key (set SUPABASE_SERVICE_KEY in .env) - "
               "DB insert OFF; writing JSONL only.", flush=True)
     else:
         try:
             sink = DBSink(SERVICE, dmap)
         except Exception as exc:  # noqa: BLE001
-            print(f"⚠  Service key/insert setup failed ({exc}) — DB insert OFF.", flush=True)
+            print(f"⚠  Service key/insert setup failed ({exc}) - DB insert OFF.", flush=True)
             sink = None
 
 # --------------------------------------------------------------------------- run
@@ -488,7 +488,7 @@ _mode = ("mixed-scene" if args.mixed
          else "positive-bias" if args.positive_quarters > 0
          else "neutral-bias" if args.neutral_quarters > 0
          else "splitting evenly" if args.even else "filling emptiest first")
-print(f"Quarters: {len(quarters)} total, {empty_before} empty — {_mode} -> {out}", flush=True)
+print(f"Quarters: {len(quarters)} total, {empty_before} empty - {_mode} -> {out}", flush=True)
 
 ex = ThreadPoolExecutor(max_workers=max(1, args.concurrency))
 futures = [ex.submit(engine.generate_one, s) for s in specs]
@@ -513,7 +513,7 @@ try:
         sys.stdout.flush()
 except KeyboardInterrupt:
     interrupted = True
-    sys.stdout.write("\n⏹  Interrupted — cancelling pending posts and flushing…\n")
+    sys.stdout.write("\n⏹  Interrupted - cancelling pending posts and flushing…\n")
     sys.stdout.flush()
 finally:
     ex.shutdown(wait=False, cancel_futures=True)
@@ -538,5 +538,5 @@ if sink:
     except Exception:  # noqa: BLE001
         pass
 else:
-    print("  insert    : OFF — to insert later, run:")
+    print("  insert    : OFF - to insert later, run:")
     print(f"              python scripts/insert_synthetic.py {out}")

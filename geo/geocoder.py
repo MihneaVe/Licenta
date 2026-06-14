@@ -13,7 +13,7 @@ class GeocoderService:
     Rate-limited to 1 request/second per Nominatim usage policy.
     """
 
-    def __init__(self, user_agent="civicpulse-thesis/1.0"):
+    def __init__(self, user_agent="urbanpulse-thesis/1.0"):
         self.geolocator = Nominatim(user_agent=user_agent)
         self.geocode = RateLimiter(
             self.geolocator.geocode,

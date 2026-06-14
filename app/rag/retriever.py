@@ -5,6 +5,7 @@ Uses SQLAlchemy Core (text()) against the Supabase Postgres connection.
 """
 
 import logging
+import re
 
 from sqlalchemy import text
 
@@ -15,6 +16,32 @@ logger = logging.getLogger(__name__)
 
 RRF_K = 60
 MAX_CANDIDATES = 50
+
+# Common EN/RO function words dropped from the lexical query so the OR-search is
+# driven by content terms, not by "the / is / despre / care" matching everywhere.
+_STOPWORDS = {
+    "the", "and", "are", "for", "with", "what", "that", "this", "you", "they",
+    "there", "about", "from", "have", "has", "was", "were", "its", "their",
+    "most", "main", "some", "any", "can", "will", "would", "people", "residents",
+    "say", "saying", "feel", "think", "regarding", "complaining", "complaints",
+    "sunt", "este", "care", "din", "despre", "pentru", "intre", "mai", "sau",
+    "dar", "ale", "lor", "cum", "ce", "ca", "cu", "la", "un", "una",
+}
+
+
+def _or_tsquery(query: str) -> str:
+    """Turn a natural-language query into an OR-ed tsquery of content terms.
+
+    plainto_tsquery ANDs every token (and 'simple' keeps stopwords), which makes
+    a long rewritten question match almost nothing. ORing the meaningful tokens
+    restores recall; ts_rank then orders by how many terms a post matches.
+    """
+    toks = re.findall(r"\w+", (query or "").lower())
+    seen: list[str] = []
+    for t in toks:
+        if len(t) >= 3 and t not in _STOPWORDS and t not in seen:
+            seen.append(t)
+    return " | ".join(seen[:25])
 
 
 def _vec_literal(vec: list[float]) -> str:
@@ -152,18 +179,18 @@ def dense_search(query_vec: list[float], filters: dict, limit: int = MAX_CANDIDA
 
 
 def sparse_search(query: str, filters: dict, limit: int = MAX_CANDIDATES) -> list[dict]:
-    query = (query or "").strip()
-    if not query:
+    tsq = _or_tsquery(query)
+    if not tsq:
         return []
-    params = {"q": query, "limit": limit}
+    params = {"q": tsq, "limit": limit}
     where = _filter_sql(filters, params)
     sql = text(f"""
         SELECT {_COLUMNS},
                ts_rank_cd(to_tsvector('simple', p.content),
-                          plainto_tsquery('simple', :q)) AS score
+                          to_tsquery('simple', :q)) AS score
         FROM   analytics_socialpost p
         LEFT   JOIN analytics_district d ON d.id = p.district_id
-        WHERE  to_tsvector('simple', p.content) @@ plainto_tsquery('simple', :q) {where}
+        WHERE  to_tsvector('simple', p.content) @@ to_tsquery('simple', :q) {where}
         ORDER  BY score DESC
         LIMIT  :limit
     """)

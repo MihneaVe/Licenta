@@ -45,7 +45,7 @@ def rewrite_query(question: str, history: list[dict] | None = None) -> str:
         "Rewrite this as a standalone natural-language search phrase for finding "
         "relevant Bucharest citizen-feedback posts (civic issues, neighborhoods, "
         "public services). Resolve pronouns and references using the conversation "
-        "context. Use plain keywords and phrases a resident might write — NOT SQL, "
+        "context. Use plain keywords and phrases a resident might write - NOT SQL, "
         "NOT code, no field names, no operators. "
         "Return ONLY the rewritten search phrase, nothing else.\n\n"
         "Example: 'transport complaints and bus delays in Sector 3'"

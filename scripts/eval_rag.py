@@ -157,7 +157,7 @@ def write_reports(results: dict, k: int, judge: bool) -> pathlib.Path:
 
     cols = [f"precision@{k}", f"hit@{k}", "mrr"] + (["context_score"] if judge else [])
     lines = [
-        f"# RAG retrieval evaluation — {stamp}",
+        f"# RAG retrieval evaluation - {stamp}",
         "",
         f"{len(results['variants'])} variant(s), "
         f"{results['variants'][0]['summary']['questions']} questions, top-{k}.",

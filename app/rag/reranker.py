@@ -30,7 +30,7 @@ def _get_model():
         _pair = (tok, model)
         logger.info("Reranker ready.")
     except Exception:
-        logger.exception("Reranker unavailable — falling back to fused order")
+        logger.exception("Reranker unavailable - falling back to fused order")
         _pair = False
     return _pair
 
@@ -57,5 +57,5 @@ def rerank(query: str, candidates: list[dict], top_k: int = 15) -> list[dict]:
             out.append(doc)
         return out
     except Exception:
-        logger.exception("rerank() failed — returning fused order")
+        logger.exception("rerank() failed - returning fused order")
         return candidates[:top_k]

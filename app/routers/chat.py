@@ -1,4 +1,4 @@
-"""City Assistant chat endpoint — SOTA RAG pipeline, streaming NDJSON.
+"""City Assistant chat endpoint - SOTA RAG pipeline, streaming NDJSON.
 
 POST /api/chat/
 Body: {"question": str, "history": [...], "filters": {"district": str|null, "since": str|null}}
@@ -9,9 +9,10 @@ import json
 import logging
 
 import requests
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
+from ..auth import require_auth
 from ..config import OLLAMA_HOST, CHAT_MODEL
 from ..rag.pipeline import run_pipeline
 
@@ -44,7 +45,7 @@ def _probe_ollama() -> str | None:
     return None
 
 
-@router.post("/api/chat/")
+@router.post("/api/chat/", dependencies=[Depends(require_auth)])
 async def chat(request: Request):
     try:
         data = await request.json()

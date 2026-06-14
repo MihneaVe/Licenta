@@ -136,7 +136,7 @@ export default function Layout() {
             </div>
           </div>
           
-          {/* Quarter + date filters (Mobile) — drive every dashboard page */}
+          {/* Quarter + date filters (Mobile) - drive every dashboard page */}
           <div className="flex items-center gap-2 px-4 pb-3">
             <MultiSelect
               icon="location_on"

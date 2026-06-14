@@ -39,7 +39,7 @@
 /* ---------------------------------------------------------------------
    Motion: page transitions, entrance animations, tactile button presses.
    Everything here is disabled under prefers-reduced-motion (bottom of file).
-   The page transition is opacity-only on purpose — a lingering transform
+   The page transition is opacity-only on purpose - a lingering transform
    on the routed wrapper would re-anchor position:fixed children (e.g. the
    assistant's "See posts" modal, which we also render through a portal).
    ------------------------------------------------------------------ */

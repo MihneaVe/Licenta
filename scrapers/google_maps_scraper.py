@@ -145,7 +145,7 @@ class GoogleMapsScraper:
     async def _parse_review(self, element, place_name, coordinates, place_url):
         """Parse a single review element into a structured dict."""
         try:
-            # Review text — may need to expand "More" button
+            # Review text - may need to expand "More" button
             try:
                 more_btn = element.locator("button", has_text="More")
                 if await more_btn.count() > 0:
@@ -223,7 +223,7 @@ class GoogleMapsScraper:
         return self.reviews
 
     def get_posts(self):
-        """Unified interface — returns reviews in post-like format."""
+        """Unified interface - returns reviews in post-like format."""
         return self.reviews
 
     def clear(self):

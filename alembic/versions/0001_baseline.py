@@ -1,4 +1,4 @@
-"""baseline — CivicPulse schema (data + RAG tables, pgvector)
+"""baseline - UrbanPulse schema (data + RAG tables, pgvector)
 
 Represents the existing Supabase schema the FastAPI app owns. On the live
 database this revision is applied with ``alembic stamp 0001_baseline`` (the

@@ -1,10 +1,10 @@
-"""Manual paste ingestion endpoint — replaces the former Django /ingest/ form.
+"""Manual paste ingestion endpoint - replaces the former Django /ingest/ form.
 
 POST /api/ingest/
 Body: {"source": "reddit"|"x", "text": str, "process": bool (default true)}
 
-Persists the pasted post (idempotent on content hash), then — unless
-process=false — kicks off `scripts.pipeline --skip-scores` in a detached
+Persists the pasted post (idempotent on content hash), then - unless
+process=false - kicks off `scripts.pipeline --skip-scores` in a detached
 subprocess so the new post gains sentiment, topics, a district, and an
 embedding without blocking the response or loading the NLP models into the
 web process.
@@ -14,9 +14,10 @@ import logging
 import subprocess
 import sys
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
+from ..auth import require_auth
 from ..ingestion.service import IngestionError, ingest_post
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def _schedule_processing() -> bool:
         return False
 
 
-@router.post("/api/ingest/")
+@router.post("/api/ingest/", dependencies=[Depends(require_auth)])
 async def ingest(request: Request):
     try:
         data = await request.json()

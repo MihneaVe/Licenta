@@ -72,7 +72,7 @@ function pointToLayer(feature, latlng) {
 // mouseout can restore the *selection-aware* style (dimmed when filtered out).
 function bindFeatureInfo(feature, layer) {
   const p = feature.properties;
-  const sent = p.avg_sentiment == null ? '—' : Number(p.avg_sentiment).toFixed(2);
+  const sent = p.avg_sentiment == null ? '-' : Number(p.avg_sentiment).toFixed(2);
   layer.bindTooltip(p.name, { sticky: true });
   layer.bindPopup(
     `<div style="min-width:140px">

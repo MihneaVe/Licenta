@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class FacebookGroupsScraper:
     """Scrapes public Facebook groups for civic complaints and discussions.
 
-    No login required — only scrapes publicly visible group content.
+    No login required - only scrapes publicly visible group content.
     Uses Playwright for JavaScript-rendered pages.
     """
 

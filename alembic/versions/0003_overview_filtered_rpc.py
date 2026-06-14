@@ -1,4 +1,4 @@
-"""feedbacks_overview_filtered RPC — filtered Overview KPIs
+"""feedbacks_overview_filtered RPC - filtered Overview KPIs
 
 Captures the Postgres function Overview.jsx calls through supabase-js
 (`.rpc('feedbacks_overview_filtered', …)`). It was created directly on

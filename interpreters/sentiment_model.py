@@ -3,7 +3,7 @@ from transformers import pipeline
 
 logger = logging.getLogger(__name__)
 
-# Multilingual sentiment model — supports Romanian, English, and 8+ languages
+# Multilingual sentiment model - supports Romanian, English, and 8+ languages
 MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
 
 # Label mapping: the model outputs 'negative', 'neutral', 'positive'
@@ -28,7 +28,7 @@ class SentimentModel:
     """Sentiment analysis using cardiffnlp/twitter-xlm-roberta-base-sentiment.
 
     A multilingual XLM-RoBERTa model fine-tuned on ~198M tweets.
-    Runs locally via HuggingFace Transformers — no API calls needed.
+    Runs locally via HuggingFace Transformers - no API calls needed.
     """
 
     def __init__(self, model_name=MODEL_NAME, device=-1):

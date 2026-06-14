@@ -1,7 +1,7 @@
 """Source-specific paste parsers.
 
 Each parser turns a raw copy-paste blob into a :class:`ParsedPost`. They
-are best-effort — when no metadata can be extracted, the entire input is
+are best-effort - when no metadata can be extracted, the entire input is
 treated as the post body.
 """
 

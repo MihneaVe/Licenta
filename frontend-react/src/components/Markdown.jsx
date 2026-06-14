@@ -64,7 +64,7 @@ const components = {
   },
 };
 
-// Renders assistant answers (which the LLM writes in Markdown — tables, lists,
+// Renders assistant answers (which the LLM writes in Markdown - tables, lists,
 // bold, etc.) as formatted output instead of raw text.
 export default function Markdown({ children }) {
   return (

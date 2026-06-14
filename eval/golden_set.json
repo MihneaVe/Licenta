@@ -1,5 +1,5 @@
 {
-  "description": "Golden evaluation set for the CivicPulse RAG assistant. Each question carries expected labels (topics / sentiment / locations) used as a relevance proxy: a retrieved post counts as relevant when it matches every specified expectation. Topics refer to the post's primary topic; 'locations' must use exact analytics_district names.",
+  "description": "Golden evaluation set for the UrbanPulse RAG assistant. Each question carries expected labels (topics / sentiment / locations) used as a relevance proxy: a retrieved post counts as relevant when it matches every specified expectation. Topics refer to the post's primary topic; 'locations' must use exact analytics_district names.",
   "questions": [
     { "id": "q01", "question": "What are people complaining about regarding garbage collection?", "expect": { "topics": ["cleanliness"], "sentiment": "Negative" } },
     { "id": "q02", "question": "Summarize the main transport complaints in the city.", "expect": { "topics": ["transport", "infrastructure"], "sentiment": "Negative" } },

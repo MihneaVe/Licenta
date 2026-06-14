@@ -14,7 +14,7 @@ from dataclasses import dataclass
 # The six app-level topics the dashboard knows (must match analytics_topiccategory).
 APP_TOPICS = ["infrastructure", "cleanliness", "safety", "transport", "greenspace", "other"]
 
-# Concrete civic issues per topic — gives the model something specific to write about.
+# Concrete civic issues per topic - gives the model something specific to write about.
 SUBTOPICS = {
     "infrastructure": ["potholes", "broken sidewalks", "street lighting outages", "burst water pipes",
                        "crumbling building facades", "winter heating outages", "flooded underpasses"],

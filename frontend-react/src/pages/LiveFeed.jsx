@@ -86,7 +86,7 @@ export default function LiveFeed() {
 
   // Real-time inserts (respecting the active quarter filter). Postgres views
   // don't emit LISTEN/NOTIFY, so this is mostly dormant for the `feedbacks`
-  // view — kept (with an id-dedup guard) so it lights up if that ever changes.
+  // view - kept (with an id-dedup guard) so it lights up if that ever changes.
   useEffect(() => {
     const channel = supabase
       .channel('feedbacks-live')

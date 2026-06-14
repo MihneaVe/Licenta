@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-// Custom dropdown — native <select> option lists can't be dark-themed
+// Custom dropdown - native <select> option lists can't be dark-themed
 // (the browser renders them with OS chrome), so we roll our own.
 export default function Dropdown({ icon, value, options, onChange, widthClass = 'w-48' }) {
   const [open, setOpen] = useState(false);

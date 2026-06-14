@@ -1,4 +1,4 @@
-"""CivicPulse FastAPI backend (replaces the former Django backend).
+"""UrbanPulse FastAPI backend (replaces the former Django backend).
 
 Serves the City Assistant RAG endpoints and owns the SQLAlchemy models +
 Alembic migrations for the Supabase Postgres schema. Batch jobs (embedding,

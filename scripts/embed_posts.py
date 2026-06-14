@@ -1,6 +1,6 @@
 """Embed social posts into rag_postembedding via Ollama nomic-embed-text.
 
-Resumable — skips posts that already have an embedding unless --all is passed.
+Resumable - skips posts that already have an embedding unless --all is passed.
 
 Usage (from the project root):
     python -m scripts.embed_posts                # embed missing posts
@@ -112,7 +112,7 @@ def main():
                 ok += 1
             done = min(i + args.batch, total)
             rate = done / (time.time() - start)
-            print(f"  {done}/{total} ({rate:.1f}/s) — {ok} ok, {failed} failed")
+            print(f"  {done}/{total} ({rate:.1f}/s) - {ok} ok, {failed} failed")
 
     print(f"Done! {ok} embedded, {failed} failed in {(time.time()-start)/60:.1f} min.")
 

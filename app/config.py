@@ -36,7 +36,7 @@ SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
 
 # --- Retrieval --------------------------------------------------------------
 # pgvector HNSW search breadth. The default (40) is too low once a WHERE filter
-# (district / date) prunes candidates — filtered searches then return far fewer
+# (district / date) prunes candidates - filtered searches then return far fewer
 # rows than requested. 200 keeps recall high for filtered queries.
 HNSW_EF_SEARCH = int(os.environ.get("HNSW_EF_SEARCH", "200"))
 
@@ -49,3 +49,14 @@ RERANKER_MODEL = os.environ.get("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
 # --- CORS -------------------------------------------------------------------
 # Comma-separated list of allowed origins for the SPA; "*" in dev.
 CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*").split(",")
+
+# --- Auth0 (optional API protection) ----------------------------------------
+# Defence-in-depth on top of the database RLS: when both AUTH0_DOMAIN and
+# AUTH0_AUDIENCE are set, the write/compute endpoints (/api/ingest, /api/chat,
+# /api/rag/feedback) require a valid Auth0 access token (JWT, RS256, verified
+# against the tenant JWKS). Left unset, the checks are a no-op so the app still
+# runs locally / on the docker localdb profile without an Auth0 tenant.
+AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN", "").strip().replace("https://", "").rstrip("/")
+AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "").strip()
+AUTH0_ALGORITHMS = [a.strip() for a in os.environ.get("AUTH0_ALGORITHMS", "RS256").split(",") if a.strip()]
+AUTH_ENABLED = bool(AUTH0_DOMAIN and AUTH0_AUDIENCE)

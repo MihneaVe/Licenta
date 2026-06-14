@@ -3,7 +3,7 @@ import unicodedata
 
 
 def clean_text(text):
-    """Clean text for NLP processing — preserves Romanian diacritics."""
+    """Clean text for NLP processing - preserves Romanian diacritics."""
     # Remove URLs
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
     # Remove HTML tags

@@ -31,7 +31,7 @@ class TopicClassifier:
     """Zero-shot topic classification using mDeBERTa for civic issue categories.
 
     Classifies posts into: infrastructure, cleanliness, safety, transport,
-    greenspace, other — without requiring fine-tuned training data.
+    greenspace, other - without requiring fine-tuned training data.
     """
 
     def __init__(self, model_name=MODEL_NAME, device=-1):

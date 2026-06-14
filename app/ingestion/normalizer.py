@@ -22,7 +22,7 @@ HASHTAG_RE = re.compile(r"(?<!\w)#(\w+)", flags=re.UNICODE)
 WHITESPACE_RE = re.compile(r"\s+")
 RT_PREFIX_RE = re.compile(r"^RT @\w+:\s*", flags=re.IGNORECASE)
 
-# Zero-width / bidi / formatting controls — defined via escape sequences
+# Zero-width / bidi / formatting controls - defined via escape sequences
 # so the source file stays free of invisible bytes.
 ZERO_WIDTH_RE = re.compile(
     "["
@@ -55,7 +55,7 @@ DIACRITIC_FOLD = {
 
 @dataclass
 class NormalizedText:
-    """Result of normalization — what the NLP pipeline consumes."""
+    """Result of normalization - what the NLP pipeline consumes."""
 
     clean: str
     char_count: int

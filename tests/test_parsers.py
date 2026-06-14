@@ -1,4 +1,4 @@
-"""Unit tests for the Reddit / X paste parsers — pure parsing, no DB."""
+"""Unit tests for the Reddit / X paste parsers - pure parsing, no DB."""
 
 import json
 

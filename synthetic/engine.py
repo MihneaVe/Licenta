@@ -30,14 +30,14 @@ PLATFORM_STYLE = {
 }
 
 _DRAFT_SYS = ("You write realistic {lang} social-media posts as ordinary Bucharest residents "
-              "reacting to everyday civic issues. You imitate real platform voice — imperfect, "
+              "reacting to everyday civic issues. You imitate real platform voice - imperfect, "
               "specific, human. Output ONLY a single JSON object, no preamble.")
 
 _DRAFT_PROMPT = (
     "Write {style} from a resident of the {district} area of Bucharest.\n"
     "Civic topic: {subtopic} (category: {app_topic}).\n"
     "Sentiment: {sentiment}. Tone / angle: {angle}.\n"
-    "Be concrete — name the place and a specific detail. Sound like a real person, not a press "
+    "Be concrete - name the place and a specific detail. Sound like a real person, not a press "
     "release. Language: {lang}.\n"
     "{street_rule}"
     'Return JSON only: {{"text": "<the post>", "author": "<a plausible handle/display name>", '
@@ -51,14 +51,14 @@ _STREET_RULE = (
     "fit naturally, don't name one. (Other real streets here include: {examples}.)\n"
 )
 _STREET_RULE_NONE = (
-    "STREET RULE: do NOT name any specific street — keep the location to the {district} "
+    "STREET RULE: do NOT name any specific street - keep the location to the {district} "
     "neighbourhood in general.\n"
 )
 
 _STREET_FIX_PROMPT = (
     "This {platform} post names a street that does NOT exist in {district}: {bad}.\n"
     "Rewrite it to use exactly this real street instead: \"{street}\" (or remove the street "
-    "mention entirely). Keep everything else — topic, {sentiment} sentiment, tone. Language: {lang}.\n\n"
+    "mention entirely). Keep everything else - topic, {sentiment} sentiment, tone. Language: {lang}.\n\n"
     "Post:\n{text}\n\n"
     'Return JSON only: {{"text": "<rewritten>", "author": "<handle>", "hashtags": ["tag"]}}'
 )
@@ -211,7 +211,7 @@ class SyntheticEngine:
             if rtext:
                 text, author, tags = rtext, rauthor or author, rtags or tags
 
-        # Deterministic safety net — guarantees no invented street survives.
+        # Deterministic safety net - guarantees no invented street survives.
         bad = streetlib.validate(text, spec.streets)
         if bad:
             fixed = True
@@ -247,5 +247,5 @@ class SyntheticEngine:
                 revisions=revisions, critique=critique,
                 street=chosen or "", street_fixed=street_fixed,
             )
-        except Exception as exc:  # noqa: BLE001 — surface as a per-post error, keep the run going
+        except Exception as exc:  # noqa: BLE001 - surface as a per-post error, keep the run going
             return PostResult(spec=spec, error=str(exc))

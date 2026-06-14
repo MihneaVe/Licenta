@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 
-// Checkbox multi-select dropdown — lets the user combine several quarters in
+// Checkbox multi-select dropdown - lets the user combine several quarters in
 // one filter. Mirrors Dropdown.jsx's styling/behaviour (custom panel so the
 // option list can be dark-themed and searchable). `selected` is an array of
 // option values; an empty array means "all" (no constraint).

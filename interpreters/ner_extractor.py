@@ -22,7 +22,7 @@ class NERExtractor:
             import spacy
         except ImportError:
             logger.warning(
-                "spaCy is not installed — location extraction will use the "
+                "spaCy is not installed - location extraction will use the "
                 "pattern-based fallback only (pip install spacy)."
             )
             self.nlp = None

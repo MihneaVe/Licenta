@@ -12,13 +12,13 @@ from alembic import context
 
 from app.config import DATABASE_URL
 from app.db import Base, engine
-import app.models  # noqa: F401 — register models on Base.metadata
+import app.models  # noqa: F401 - register models on Base.metadata
 
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
 # NB: we deliberately do NOT write DATABASE_URL into the alembic config via
-# set_main_option — the URL-encoded password contains '%' which ConfigParser
+# set_main_option - the URL-encoded password contains '%' which ConfigParser
 # would try to interpolate. We use app.db.engine / DATABASE_URL directly instead.
 
 target_metadata = Base.metadata

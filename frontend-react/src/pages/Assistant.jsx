@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import Markdown from '../components/Markdown';
+import { authHeader } from '../lib/auth';
 
 // FastAPI backend (the RAG pipeline).
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -73,6 +75,7 @@ function PostsModal({ posts, onClose }) {
 }
 
 export default function Assistant() {
+  const { getAccessTokenSilently } = useAuth0();
   const { districts = [], fromDate, toDate, fromISO, toISO } = useOutletContext() || {};
   const [messages, setMessages] = useState([]); // { role, content, meta?, statusText?, feedback? }
   const [input, setInput] = useState('');
@@ -120,7 +123,7 @@ export default function Assistant() {
       // We only send the question, recent history, and the dashboard filters.
       const resp = await fetch(`${API_URL}/api/chat/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await authHeader(getAccessTokenSilently)) },
         body: JSON.stringify({
           question,
           history,
@@ -234,7 +237,7 @@ export default function Assistant() {
     try {
       await fetch(`${API_URL}/api/rag/feedback/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await authHeader(getAccessTokenSilently)) },
         body: JSON.stringify({
           session_id: sessionId,
           question: (prevUser.content || '').slice(0, 2000),
@@ -246,7 +249,7 @@ export default function Assistant() {
         }),
       });
     } catch {
-      // Non-critical — silently ignore network errors on feedback.
+      // Non-critical - silently ignore network errors on feedback.
     }
   }
 
@@ -274,7 +277,7 @@ export default function Assistant() {
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span className="material-symbols-outlined text-[16px] text-primary">database</span>
-          <span>RAG-grounded on live feedback — <span className="font-semibold text-slate-700 dark:text-slate-300">{scope}</span></span>
+          <span>RAG-grounded on live feedback - <span className="font-semibold text-slate-700 dark:text-slate-300">{scope}</span></span>
         </div>
         {messages.length > 0 && (
           <button
@@ -369,7 +372,7 @@ export default function Assistant() {
                       {m.meta.retrievalRounds > 1 ? ` · ${m.meta.retrievalRounds} retrieval rounds` : ''}
                     </p>
 
-                    {/* See posts — opens the grounding quotes in a modal */}
+                    {/* See posts - opens the grounding quotes in a modal */}
                     {m.meta.posts?.length > 0 && (
                       <button
                         onClick={() => setModalPosts(m.meta.posts)}
@@ -380,7 +383,7 @@ export default function Assistant() {
                       </button>
                     )}
 
-                    {/* Thumbs up/down — only on fully rendered answers */}
+                    {/* Thumbs up/down - only on fully rendered answers */}
                     {m.content && (
                       <div className="flex gap-1">
                         <button

@@ -40,7 +40,7 @@ SYSTEM_PROMPT = (
     "Summarise the main pattern, give 1-3 concrete examples with citations, and name "
     "relevant locations, topics, and sentiments. "
     "If the posts don't contain enough information, say so clearly instead of inventing facts. "
-    "Be concise — a short paragraph or a few bullet points is ideal."
+    "Be concise - a short paragraph or a few bullet points is ideal."
 )
 
 
@@ -96,9 +96,9 @@ def _format_posts_for_prompt(posts: list[dict]) -> str:
     lines = []
     for i, p in enumerate(posts[:MAX_CONTEXT_POSTS], 1):
         content = (p.get("content") or "").replace("\n", " ").strip()[:MAX_POST_CHARS]
-        loc = (p.get("location") or "—").strip() or "—"
-        topic = (p.get("topic") or "—").strip() or "—"
-        sent = (p.get("sentiment_label") or "—").strip() or "—"
+        loc = (p.get("location") or "-").strip() or "-"
+        topic = (p.get("topic") or "-").strip() or "-"
+        sent = (p.get("sentiment_label") or "-").strip() or "-"
         lines.append(f"[{i}] [{loc} | {topic} | {sent}] {content}")
     return "\n".join(lines)
 
@@ -208,7 +208,7 @@ def run_pipeline(question: str, filters: dict, history: list[dict]):
     retrieval_rounds = 1
 
     if context_score < CONTEXT_RETRY_THRESHOLD:
-        yield _evt("status", text="Context weak — re-retrieving with a refined query…")
+        yield _evt("status", text="Context weak - re-retrieving with a refined query…")
         retry_q = rewrite_query(
             f"{question} [need more specific and relevant results than the previous search]",
             history,
@@ -222,7 +222,7 @@ def run_pipeline(question: str, filters: dict, history: list[dict]):
 
     context_posts = reranked[:MAX_CONTEXT_POSTS]
 
-    # Compact post objects for the frontend "See posts" modal — the actual
+    # Compact post objects for the frontend "See posts" modal - the actual
     # quotes the answer is grounded on (numbered to match any [n] citations).
     cited = [
         {

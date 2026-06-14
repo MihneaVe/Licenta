@@ -1,4 +1,4 @@
-"""RAG feedback endpoint — thumbs up/down on assistant answers.
+"""RAG feedback endpoint - thumbs up/down on assistant answers.
 
 POST /api/rag/feedback/
 Body: {session_id?, question, answer, retrieved_post_ids: [int], rating: 'up'|'down',
@@ -8,9 +8,10 @@ Stored in rag_feedback (Supabase) for offline eval + retrieval re-weighting.
 
 import logging
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
+from ..auth import require_auth
 from ..db import SessionLocal
 from ..models import RagFeedback
 
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/api/rag/feedback/")
+@router.post("/api/rag/feedback/", dependencies=[Depends(require_auth)])
 async def feedback(request: Request):
     try:
         data = await request.json()

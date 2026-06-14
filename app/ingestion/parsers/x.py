@@ -2,10 +2,10 @@
 
 Handles two input shapes:
 
-1. **Web copy-paste** — the layout you get when selecting a tweet on
+1. **Web copy-paste** - the layout you get when selecting a tweet on
    ``x.com``: display name, ``@handle``, timestamp, body text, then
    engagement metrics (replies, reposts, likes, views).
-2. **Plain text** — anything else; treated as the tweet body.
+2. **Plain text** - anything else; treated as the tweet body.
 
 The web layout is recognised by anchoring on the ``@handle`` line: the
 line immediately before it is the display name, the lines after it (up
@@ -62,7 +62,7 @@ def parse_x(raw_text: str) -> ParsedPost:
     source_id = ""
     url = ""
 
-    # Status URL is unambiguous — pull it out wherever it appears.
+    # Status URL is unambiguous - pull it out wherever it appears.
     for line in lines:
         m = STATUS_URL_RE.search(line)
         if m:

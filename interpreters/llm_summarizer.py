@@ -11,7 +11,7 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:1B")
 class LLMSummarizer:
     """Summarization and insight generation using a local Ollama model.
 
-    Uses gemma3:1B by default — small, fast, good enough for short summaries.
+    Uses gemma3:1B by default - small, fast, good enough for short summaries.
     """
 
     def __init__(self, model=None, host=None):

@@ -11,7 +11,7 @@ class OverpassClient:
     """Client for the OpenStreetMap Overpass API.
 
     Used to query district boundaries, POIs, and infrastructure data.
-    Completely free — no API key required.
+    Completely free - no API key required.
     """
 
     def __init__(self, api_url=OVERPASS_API_URL, timeout=60):
@@ -27,10 +27,10 @@ class OverpassClient:
         Returns:
             JSON response dict or None on failure.
         """
-        # Overpass enforces a non-default User-Agent — anonymous Python
+        # Overpass enforces a non-default User-Agent - anonymous Python
         # requests get HTTP 406 since 2024.
         headers = {
-            "User-Agent": "civicpulse-thesis/1.0 (https://github.com/MihneaVe/Licenta)",
+            "User-Agent": "urbanpulse-thesis/1.0 (https://github.com/MihneaVe/Licenta)",
             "Accept": "application/json",
         }
         try:
